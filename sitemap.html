@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FASTECH Site Map</title>
+  <style>
+    :root{--bg:#f4f7fb;--card:#fff;--nav:#0d4a8d;--accent:#d61f3a;--text:#122033;--muted:#607089;--line:#d9e3ef}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+    a{text-decoration:none;color:inherit}
+    .header{background:#fff;border-bottom:1px solid var(--line);padding:18px 24px}
+    .header h1{margin:0;font-size:24px}
+    .header p{margin:6px 0 0;color:var(--muted)}
+    .nav{background:var(--nav);color:#fff;padding:0 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+    .nav a{padding:16px 16px;display:inline-flex;align-items:center;font-weight:600}
+    .nav a.active{background:rgba(255,255,255,.08);border-bottom:3px solid var(--accent)}
+    .wrap{max-width:1100px;margin:24px auto;padding:0 24px}
+    .panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 8px 18px rgba(18,32,51,.04)}
+    .links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .item{border:1px solid var(--line);border-radius:14px;padding:16px;background:#fff}
+    .item strong{display:block;font-size:15px;margin-bottom:4px}
+    .item span{color:var(--muted);font-size:13px}
+    .footer{margin-top:28px;padding:18px 24px;background:#0b2b4c;color:#dce7f5;text-align:center}
+    @media (max-width:700px){.links{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Site Map</h1>
+    <p>All portal pages in one place.</p>
+  </div>
+  <nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="rma.html">RMA</a>
+    <a href="team-login.html">Team Login</a>
+    <a href="team-signup.html">Team Signup</a>
+    <a href="contact.html">Contact</a>
+    <a href="help.html">Help</a>
+    <a class="active" href="sitemap.html">Site Map</a>
+  </nav>
+  <main class="wrap">
+    <section class="panel">
+      <div class="links">
+        <a class="item" href="index.html"><strong>Home</strong><span>Main portal landing page.</span></a>
+        <a class="item" href="rma.html"><strong>Submit RMA</strong><span>Repair and calibration request form.</span></a>
+        <a class="item" href="team-login.html"><strong>Team Login</strong><span>Internal team access page.</span></a>
+        <a class="item" href="team-signup.html"><strong>Team Signup</strong><span>Create a new team account.</span></a>
+        <a class="item" href="team-dashboard.html"><strong>Team Dashboard</strong><span>Team overview and work area.</span></a>
+        <a class="item" href="requests.html"><strong>Requests</strong><span>View submitted service requests.</span></a>
+        <a class="item" href="reports.html"><strong>Reports</strong><span>Review reports and summaries.</span></a>
+        <a class="item" href="contact.html"><strong>Contact</strong><span>Send a message to support.</span></a>
+        <a class="item" href="help.html"><strong>Help</strong><span>Read quick answers and guidance.</span></a>
+      </div>
+    </section>
+  </main>
+  <footer class="footer">FASTECH India Customer Portal</footer>
+</body>
+</html>

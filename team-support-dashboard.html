@@ -1,0 +1,1526 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FASCAL — Support Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --bg: #f4f7fb;
+        --surface: #fff;
+        --line: #dbe5f0;
+        --text: #0f172a;
+        --muted: #64748b;
+        --primary: #0ea5e9;
+        --primary-dark: #0284c7;
+        --shadow:
+          0 4px 16px rgba(15, 23, 42, 0.07), 0 2px 4px rgba(15, 23, 42, 0.04);
+        --r-lg: 18px;
+        --r-md: 14px;
+        --r-sm: 10px;
+      }
+      html {
+        font-family: Inter, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+      button {
+        cursor: pointer;
+        font: inherit;
+      }
+      textarea {
+        font: inherit;
+      }
+      .app {
+        display: grid;
+        grid-template-columns: 252px 1fr;
+        min-height: 100vh;
+      }
+      .sidebar {
+        background: linear-gradient(180deg, #0b1220, #0d1626 100%);
+        color: #e2e8f0;
+        display: flex;
+        flex-direction: column;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        border-right: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 20px 18px 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .brand-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 800;
+      }
+      .brand-name {
+        font-size: 17px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1;
+      }
+      .brand-sub {
+        font-size: 10.5px;
+        opacity: 0.6;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-top: 3px;
+        font-weight: 700;
+      }
+      .user-panel {
+        margin: 14px 12px 0;
+        background: rgba(255, 255, 255, 0.055);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 14px;
+        padding: 12px 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .user-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #38bdf8, #0284c7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        color: #fff;
+      }
+      .user-meta small {
+        display: block;
+        font-size: 10px;
+        opacity: 0.6;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        margin-bottom: 2px;
+      }
+      .user-meta strong {
+        font-size: 13.5px;
+        font-weight: 700;
+      }
+      .nav-section {
+        padding: 18px 12px 0;
+      }
+      .nav-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        opacity: 0.45;
+        font-weight: 700;
+        padding: 0 8px 6px;
+      }
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 42px;
+        padding: 9px 12px;
+        border-radius: 10px;
+        color: #c8d8ec;
+        border: 1px solid transparent;
+        background: transparent;
+        font-size: 13.5px;
+        font-weight: 600;
+        width: 100%;
+        text-align: left;
+      }
+      .nav-item:hover,
+      .nav-item.active {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(255, 255, 255, 0.08);
+        color: #fff;
+      }
+      .sidebar-footer {
+        margin: auto 12px 0;
+        padding-top: 16px;
+        padding-bottom: 12px;
+      }
+      .btn-logout {
+        width: 100%;
+        min-height: 40px;
+        background: rgba(239, 68, 68, 0.14);
+        border: 1px solid rgba(239, 68, 68, 0.25);
+        color: #fca5a5;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      .main-wrap {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+      .navbar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        height: 58px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 0 24px;
+        background: rgba(244, 247, 251, 0.9);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(219, 229, 240, 0.9);
+      }
+      .page-title {
+        font-size: 17px;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        line-height: 1;
+      }
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12.5px;
+        color: var(--muted);
+      }
+      .navbar-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .icon-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+        position: relative;
+      }
+      .content {
+        padding: 20px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .page-header h1 {
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        line-height: 1.2;
+      }
+      .page-header p {
+        color: var(--muted);
+        font-size: 13px;
+        margin-top: 5px;
+      }
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 12px;
+      }
+      .metric-card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 16px;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 4px;
+      }
+      .metric-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .metric-value {
+        font-size: 32px;
+        font-weight: 800;
+        line-height: 1.1;
+      }
+      .metric-sub {
+        font-size: 12px;
+        color: #94a3b8;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      .card-head {
+        padding: 16px 18px;
+        border-bottom: 1px solid #eef3f9;
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+      .card-head h3 {
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+      }
+      .card-head p {
+        color: var(--muted);
+        font-size: 13px;
+        margin-top: 4px;
+      }
+      .filters {
+        padding: 14px 18px 0;
+        display: grid;
+        grid-template-columns: repeat(6, minmax(120px, 1fr));
+        gap: 10px;
+        align-items: end;
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .field.full {
+        grid-column: 1/-1;
+      }
+      .field label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 800;
+        color: #64748b;
+      }
+      .field input,
+      .field select,
+      .field textarea {
+        min-height: 38px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: #fff;
+        padding: 0 12px;
+        outline: none;
+        width: 100%;
+      }
+      .field textarea {
+        min-height: 100px;
+        padding: 12px;
+      }
+      .field input:focus,
+      .field select:focus,
+      .field textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.12);
+      }
+      .filter-actions {
+        display: flex;
+        gap: 10px;
+        align-items: end;
+        flex-wrap: wrap;
+      }
+      .btn {
+        height: 38px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: #fff;
+        padding: 0 14px;
+        font-weight: 700;
+      }
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+        border-color: transparent;
+        color: #fff;
+      }
+      .btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+      .spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.35);
+        border-top-color: #fff;
+        border-radius: 50%;
+        display: inline-block;
+        vertical-align: -2px;
+        margin-right: 8px;
+        animation: spin 0.7s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .btn-ghost {
+        background: #fff;
+      }
+      .approval-section {
+        margin-top: 14px;
+        padding: 14px;
+        border: 1px solid #e5eef7;
+        border-radius: 12px;
+        background: #fafcff;
+      }
+      .approval-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .btn-approve {
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        border-color: transparent;
+        color: #fff;
+      }
+      .btn-disapprove {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        border-color: transparent;
+        color: #fff;
+      }
+      .approval-status-note {
+        margin-top: 10px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .approval-status-note.approved {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .approval-status-note.disapproved {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+      .btn-sm {
+        height: 32px;
+        padding: 0 12px;
+        border-radius: 8px;
+      }
+      .tabs {
+        display: flex;
+        gap: 8px;
+        padding: 12px 18px 16px;
+        flex-wrap: wrap;
+      }
+      .tab-btn {
+        height: 34px;
+        padding: 0 14px;
+        border-radius: 999px;
+        border: 1px solid #e2e8f0;
+        background: #fff;
+        font-weight: 700;
+        color: #475569;
+      }
+      .tab-btn.active {
+        background: #111827;
+        color: #fff;
+        border-color: #111827;
+      }
+      .table-wrap {
+        overflow: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      thead th {
+        text-align: left;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #64748b;
+        padding: 14px 18px;
+        background: #fafcff;
+        border-top: 1px solid #eef3f9;
+        border-bottom: 1px solid #eef3f9;
+        white-space: nowrap;
+      }
+      tbody td {
+        padding: 14px 18px;
+        border-bottom: 1px solid #eef3f9;
+        vertical-align: top;
+      }
+      .td-sub {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .td-empty {
+        padding: 36px 18px;
+        text-align: center;
+        color: var(--muted);
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .pill-open {
+        background: #e0f2fe;
+        color: #075985;
+      }
+      .pill-progress {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .pill-approved {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .pill-rejected {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+      .pill-closed {
+        background: #e2e8f0;
+        color: #334155;
+      }
+      .pill-priority-high {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+      .pill-priority-medium {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .pill-priority-low {
+        background: #e0f2fe;
+        color: #075985;
+      }
+      .link-btn {
+        background: none;
+        border: none;
+        padding: 0;
+        text-align: left;
+        cursor: pointer;
+        color: var(--primary-dark);
+        font-weight: 700;
+      }
+      .link-btn:hover {
+        text-decoration: underline;
+      }
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.45);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        z-index: 100;
+      }
+      .modal-overlay.open {
+        display: flex;
+      }
+      .modal {
+        width: min(980px, 100%);
+        max-height: 90vh;
+        overflow: auto;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 24px 70px rgba(15, 23, 42, 0.25);
+      }
+      .modal-head {
+        padding: 16px 18px;
+        border-bottom: 1px solid #eef3f9;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .modal-head h3 {
+        font-size: 18px;
+        font-weight: 800;
+      }
+      .modal-body {
+        padding: 18px;
+        display: grid;
+        gap: 16px;
+      }
+      .detail-section {
+        border: 1px solid #eef3f9;
+        border-radius: 14px;
+        padding: 16px;
+        background: #fff;
+      }
+      .detail-section-title {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #64748b;
+        font-weight: 800;
+        margin-bottom: 12px;
+      }
+      .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      .detail-item.full {
+        grid-column: 1/-1;
+      }
+      .d-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #94a3b8;
+        font-weight: 800;
+        margin-bottom: 4px;
+      }
+      .d-value {
+        font-size: 14px;
+        color: #0f172a;
+        word-break: break-word;
+        white-space: pre-wrap;
+      }
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .file-list {
+        display: grid;
+        gap: 10px;
+      }
+      .file-item {
+        padding: 12px;
+        border: 1px solid #e5eef7;
+        border-radius: 12px;
+        background: #f8fbfe;
+      }
+      .file-item a {
+        color: var(--primary-dark);
+        font-weight: 700;
+      }
+      .file-meta {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .toast {
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        background: #0f172a;
+        color: #fff;
+        padding: 12px 18px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 13px;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.25);
+        z-index: 200;
+        display: none;
+      }
+      .toast.show {
+        display: block;
+        animation: slideIn 0.25s ease-out;
+      }
+      .toast.success {
+        background: #16a34a;
+      }
+      .toast.error {
+        background: #dc2626;
+      }
+      @keyframes slideIn {
+        from {
+          transform: translateY(-12px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      @media (max-width: 1180px) {
+        .filters {
+          grid-template-columns: repeat(3, minmax(120px, 1fr));
+        }
+      }
+      @media (max-width: 980px) {
+        .app {
+          grid-template-columns: 1fr;
+        }
+        .sidebar {
+          position: relative;
+          height: auto;
+        }
+        .metrics {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 720px) {
+        .content,
+        .navbar {
+          padding-left: 14px;
+          padding-right: 14px;
+        }
+        .metrics {
+          grid-template-columns: 1fr;
+        }
+        .detail-grid {
+          grid-template-columns: 1fr;
+        }
+        .filters {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-icon">F</div>
+          <div>
+            <div class="brand-name">FASCAL</div>
+            <div class="brand-sub">Service Portal</div>
+          </div>
+        </div>
+
+        <div class="user-panel">
+          <div class="user-avatar" id="userAvatarSidebar">S</div>
+          <div class="user-meta">
+            <small>Signed in as</small
+            ><strong id="userNameSidebar">Support</strong>
+          </div>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-label">Main Menu</div>
+          <button
+            class="nav-item"
+            onclick="window.location.href = 'index.html'"
+          >
+            Main Dashboard
+          </button>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-label">Support</div>
+          <button class="nav-item active">Support Dashboard</button>
+        </div>
+
+        <div class="sidebar-footer">
+          <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+      </aside>
+
+      <main class="main-wrap">
+        <div class="navbar">
+          <div>
+            <div class="page-title">Support Dashboard</div>
+            <div class="breadcrumb">
+              <span>Home</span><span>›</span><span>Support Requests</span>
+            </div>
+          </div>
+          <div class="navbar-right">
+            <button class="btn btn-ghost" onclick="loadSupport()">
+              Refresh
+            </button>
+            <button class="icon-btn" id="userMenuBtn">S</button>
+          </div>
+        </div>
+
+        <div class="content">
+          <div class="page-header">
+            <div>
+              <h1>Customer Support Tickets</h1>
+              <p>
+                Review, assign, and resolve support requests submitted by
+                customers.
+              </p>
+            </div>
+          </div>
+
+          <section class="metrics">
+            <div class="metric-card">
+              <div class="metric-label">Total</div>
+              <div class="metric-value" id="totalCount">0</div>
+              <div class="metric-sub">All support tickets</div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-label">Open</div>
+              <div class="metric-value" id="openCount">0</div>
+              <div class="metric-sub">Awaiting action</div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-label">Pending From Customer</div>
+              <div class="metric-value" id="pendingCustomerCount">0</div>
+              <div class="metric-sub">Waiting on customer</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Pending From Fastech</div>
+              <div class="metric-value" id="pendingFastechCount">0</div>
+              <div class="metric-sub">Waiting on Fastech</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Pending From OEM</div>
+              <div class="metric-value" id="pendingOemCount">0</div>
+              <div class="metric-sub">Waiting on OEM</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Closed</div>
+              <div class="metric-value" id="closedCount">0</div>
+              <div class="metric-sub">Resolved &amp; confirmed</div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-head">
+              <div>
+                <h3>All Support Requests</h3>
+                <p>Click a row to view full details and update status.</p>
+              </div>
+              <button class="btn btn-primary" onclick="exportCsv()">
+                Export CSV
+              </button>
+            </div>
+
+            <div class="tabs">
+              <button
+                class="tab-btn active"
+                data-filter="All"
+                onclick="setStatusFilter('All', this)"
+              >
+                All
+              </button>
+              <button
+                class="tab-btn"
+                data-filter="Open"
+                onclick="setStatusFilter('Open', this)"
+              >
+                Open
+              </button>
+              <button
+                class="tab-btn"
+                data-filter="Closed"
+                onclick="setStatusFilter('Closed', this)"
+              >
+                Closed
+              </button>
+            </div>
+
+            <div class="filters">
+              <div class="field">
+                <label for="searchInput">Search</label>
+                <input
+                  id="searchInput"
+                  type="text"
+                  placeholder="ID, name, email, OEM, description…"
+                  oninput="renderTable()"
+                />
+              </div>
+              <div class="field">
+                <label for="oemFilter">OEM</label>
+                <input
+                  id="oemFilter"
+                  type="text"
+                  placeholder="Filter by OEM"
+                  oninput="renderTable()"
+                />
+              </div>
+              <div class="field">
+                <label for="priorityFilter">Priority</label>
+                <select id="priorityFilter" onchange="renderTable()">
+                  <option value="">All</option>
+                  <option>High</option>
+                  <option>Medium</option>
+                  <option>Low</option>
+                </select>
+              </div>
+              <div class="filter-actions">
+                <button
+                  class="btn btn-ghost"
+                  type="button"
+                  onclick="resetFilters()"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Ticket</th>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    <th>OEM / Product</th>
+                    <th>Description</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Pending From</th>
+                  </tr>
+                </thead>
+                <tbody id="supportTbody">
+                  <tr>
+                    <td colspan="8" class="td-empty">
+                      Loading support tickets…
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <div class="modal-overlay" id="detailModal">
+      <div class="modal">
+        <div class="modal-head">
+          <h3 id="modalTitle">Support Ticket</h3>
+          <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-actions" style="padding: 0 18px 18px">
+          <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+          <button class="btn btn-primary" id="saveChangesBtn" onclick="saveChanges()">
+            Save Changes
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+      (function requireTeamLogin() {
+        let u = null;
+        try {
+          u = JSON.parse(localStorage.getItem("cxUser") || "null");
+        } catch (e) {}
+        if (!u || !u.token || u.role !== "team") {
+          window.location.replace("login.html");
+        }
+      })();
+
+      let allSupport = [];
+      let currentDetail = null;
+      let statusFilter = "All";
+
+      function esc(v) {
+        return String(v == null ? "" : v)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function setBtnLoading(btnId, loading, label, loadingLabel) {
+        const btn = document.getElementById(btnId);
+        if (!btn) return;
+        btn.disabled = loading;
+        btn.innerHTML = loading
+          ? '<span class="spinner"></span>' + (loadingLabel || label)
+          : label;
+      }
+
+      function norm(s) {
+        return String(s || "")
+          .toLowerCase()
+          .replace(/\s+/g, "");
+      }
+
+      function statusPillClass(status) {
+        const s = norm(status);
+        if (s === "open") return "pill pill-open";
+        if (s === "closed") return "pill pill-closed";
+        return "pill pill-open";
+      }
+
+      function priorityPillClass(p) {
+        const v = norm(p);
+
+        if (v === "high") return "pill pill-priority-high";
+        if (v === "medium") return "pill pill-priority-medium";
+        if (v === "low") return "pill pill-priority-low";
+
+        return "pill pill-priority-medium";
+      }
+
+      function ensureAuth() {
+        let user = null;
+        try {
+          user = JSON.parse(localStorage.getItem("cxUser") || "null");
+        } catch (e) {}
+        if (!user || !user.token || user.role !== "team") {
+          window.location.href = "/login.html";
+          return null;
+        }
+        const name = user.username || user.name || "Team";
+        const initial = String(name).charAt(0).toUpperCase();
+        const av = document.getElementById("userAvatarSidebar");
+        const nm = document.getElementById("userNameSidebar");
+        const btn = document.getElementById("userMenuBtn");
+        if (av) av.textContent = initial;
+        if (nm) nm.textContent = name;
+        if (btn) btn.textContent = initial;
+        return user;
+      }
+
+      function logout() {
+        localStorage.removeItem("cxUser");
+        localStorage.removeItem("fastech_team_session");
+        localStorage.removeItem("fastech_requests");
+        window.location.href = "/login.html";
+      }
+
+      function showToast(msg, kind) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.className = "toast show " + (kind || "");
+        setTimeout(function () {
+          t.className = "toast " + (kind || "");
+        }, 2400);
+      }
+
+      function exportCsv() {
+        const params = new URLSearchParams();
+        if (statusFilter && statusFilter !== "All") {
+          params.set("status", statusFilter);
+        }
+        const qs = params.toString();
+        const url = "/api/support/export/csv" + (qs ? "?" + qs : "");
+        window.open(url, "_blank");
+      }
+
+      async function loadSupport() {
+        const tbody = document.getElementById("supportTbody");
+        tbody.innerHTML =
+          '<tr><td colspan="8" class="td-empty">Loading support tickets…</td></tr>';
+        try {
+          const res = await fetch("/api/support");
+          if (!res.ok) throw new Error("Failed to fetch");
+          allSupport = await res.json();
+          updateStats();
+          renderTable();
+        } catch (err) {
+          tbody.innerHTML =
+            '<tr><td colspan="8" class="td-empty">Failed to load support tickets.</td></tr>';
+        }
+      }
+
+      function updateStats() {
+        const open = allSupport.filter(function (r) {
+          return norm(r.status) === "open";
+        }).length;
+        const closed = allSupport.filter(function (r) {
+          return norm(r.status) === "closed";
+        }).length;
+        const isPending = function (v) {
+          return String(v || "").trim().length > 0;
+        };
+        const pendingCustomer = allSupport.filter(function (r) {
+          return isPending(r.pendingForCustomer);
+        }).length;
+        const pendingFastech = allSupport.filter(function (r) {
+          return isPending(r.pendingForFastech);
+        }).length;
+        const pendingOem = allSupport.filter(function (r) {
+          return isPending(r.pendingForOem);
+        }).length;
+        const totalEl = document.getElementById("totalCount");
+        const openEl = document.getElementById("openCount");
+        const closedEl = document.getElementById("closedCount");
+        const pendingCustomerEl = document.getElementById(
+          "pendingCustomerCount",
+        );
+        const pendingFastechEl = document.getElementById("pendingFastechCount");
+        const pendingOemEl = document.getElementById("pendingOemCount");
+        if (totalEl) totalEl.textContent = allSupport.length;
+        if (openEl) openEl.textContent = open;
+        if (closedEl) closedEl.textContent = closed;
+        if (pendingCustomerEl) pendingCustomerEl.textContent = pendingCustomer;
+        if (pendingFastechEl) pendingFastechEl.textContent = pendingFastech;
+        if (pendingOemEl) pendingOemEl.textContent = pendingOem;
+      }
+
+      function setStatusFilter(value, btn) {
+        statusFilter = value;
+        document.querySelectorAll(".tab-btn").forEach(function (b) {
+          b.classList.remove("active");
+        });
+        if (btn) btn.classList.add("active");
+        renderTable();
+      }
+
+      function resetFilters() {
+        document.getElementById("searchInput").value = "";
+        document.getElementById("oemFilter").value = "";
+        document.getElementById("priorityFilter").value = "";
+        statusFilter = "All";
+        document.querySelectorAll(".tab-btn").forEach(function (b, i) {
+          b.classList.toggle("active", i === 0);
+        });
+        renderTable();
+      }
+
+      function renderTable() {
+        const tbody = document.getElementById("supportTbody");
+        const q = String(document.getElementById("searchInput").value || "")
+          .toLowerCase()
+          .trim();
+        const oemQ = String(document.getElementById("oemFilter").value || "")
+          .toLowerCase()
+          .trim();
+        const prio = document.getElementById("priorityFilter").value;
+
+        let rows = allSupport;
+        if (statusFilter !== "All")
+          rows = rows.filter(function (r) {
+            return r.status === statusFilter;
+          });
+        if (q) {
+          rows = rows.filter(function (r) {
+            return [
+              r.id,
+              r.name,
+              r.email,
+              r.oem,
+              r.product,
+              r.description,
+            ].some(function (v) {
+              return String(v || "")
+                .toLowerCase()
+                .includes(q);
+            });
+          });
+        }
+        if (oemQ)
+          rows = rows.filter(function (r) {
+            return String(r.oem || "")
+              .toLowerCase()
+              .includes(oemQ);
+          });
+        if (prio)
+          rows = rows.filter(function (r) {
+            return r.priority === prio;
+          });
+
+        if (!rows.length) {
+          tbody.innerHTML =
+            '<tr><td colspan="8" class="td-empty">No support tickets match your filters.</td></tr>';
+          return;
+        }
+
+        let html = "";
+        for (let i = 0; i < rows.length; i++) {
+          const r = rows[i];
+          html +=
+            "<tr>" +
+            '<td><button class="link-btn" onclick="openDetail(\'' +
+            esc(r.id) +
+            "')\">" +
+            esc(r.id) +
+            "</button></td>" +
+            '<td><div class="td-sub">' +
+            esc(r.createdAt || "—") +
+            "</div></td>" +
+            "<td><div><strong>" +
+            esc(r.name || "—") +
+            '</strong></div><div class="td-sub">' +
+            esc(r.email || "—") +
+            "</div></td>" +
+            "<td><div>" +
+            esc(r.oem || "—") +
+            '</div><div class="td-sub">' +
+            esc(r.product || "—") +
+            "</div></td>" +
+            "<td>" +
+            esc(r.description || "—") +
+            "</td>" +
+            '<td><span class="' +
+            priorityPillClass(r.priority) +
+            '">' +
+            esc(r.priority || "Medium") +
+            "</span></td>" +
+            '<td><span class="' +
+            statusPillClass(r.status) +
+            '">' +
+            esc(r.status || "Open") +
+            "</span></td>" +
+            "<td>" +
+            esc(
+              r.pendingForCustomer
+                ? "Pending from Customer"
+                : r.pendingForFastech
+                  ? "Pending from Fastech"
+                  : r.pendingForOem
+                    ? "Pending from OEM"
+                    : "—",
+            ) +
+            "</td>" +
+            "</tr>";
+        }
+        tbody.innerHTML = html;
+      }
+
+      function openDetail(id) {
+        const record = allSupport.find(function (r) {
+          return r.id === id;
+        });
+        if (!record) return;
+        currentDetail = record;
+        document.getElementById("modalTitle").textContent =
+          "Support Ticket " + record.id;
+
+        const images = Array.isArray(record.images) ? record.images : [];
+        const imagesHtml = images.length
+          ? '<div class="file-list">' +
+            images
+              .map(function (f) {
+                return (
+                  '<div class="file-item"><a href="' +
+                  esc(f.path) +
+                  '" target="_blank" rel="noopener">' +
+                  esc(f.originalName || f.fileName) +
+                  '</a><div class="file-meta">' +
+                  esc(f.mimeType || "") +
+                  " · " +
+                  esc(f.size || 0) +
+                  " bytes</div></div>"
+                );
+              })
+              .join("") +
+            "</div>"
+          : '<div class="td-sub">No attachments uploaded.</div>';
+
+        const body =
+          "" +
+          '<div class="detail-section">' +
+          '<div class="detail-section-title">Customer Information</div>' +
+          '<div class="detail-grid">' +
+          '<div class="detail-item"><div class="d-label">Name</div><div class="d-value">' +
+          esc(record.name) +
+          "</div></div>" +
+          '<div class="detail-item"><div class="d-label">Email</div><div class="d-value">' +
+          esc(record.email) +
+          "</div></div>" +
+          '<div class="detail-item"><div class="d-label">Phone</div><div class="d-value">' +
+          esc(record.phone || "—") +
+          "</div></div>" +
+          '<div class="detail-item"><div class="d-label">Company</div><div class="d-value">' +
+          esc(record.company || "—") +
+          "</div></div>" +
+          '<div class="detail-item"><div class="d-label">Designation</div><div class="d-value">' +
+          esc(record.designation || "—") +
+          "</div></div>" +
+          '<div class="detail-item"><div class="d-label">OEM</div><div class="d-value">' +
+          esc(record.oem) +
+          "</div></div>" +
+          '<div class="detail-item"><div class="d-label">Product</div><div class="d-value">' +
+          esc(record.product) +
+          "</div></div>" +
+          '<div class="detail-item"><div class="d-label">Software Version</div><div class="d-value">' +
+          esc(record.softwareVersion || "—") +
+          "</div></div>" +
+          "</div>" +
+          "</div>" +
+          '<div class="detail-section">' +
+          '<div class="detail-section-title">Support Details</div>' +
+          '<div class="detail-grid">' +
+          '<div class="detail-item full"><div class="d-label">Description</div><div class="d-value">' +
+          esc(record.description || "—") +
+          "</div></div>" +
+          '<div class="detail-item full"><div class="d-label">Additional Information</div><div class="d-value">' +
+          esc(record.additionalInfo || "—") +
+          "</div></div>" +
+          '<div class="detail-item full"><div class="d-label">Attachments</div><div class="d-value">' +
+          imagesHtml +
+          "</div></div>" +
+          '<div class="detail-item full"><div class="d-label">Add File / Image</div>' +
+          '<div class="field"><input id="editAttachment" type="file" multiple /></div>' +
+          "</div>" +
+          "</div>" +
+          "</div>" +
+          '<div class="detail-section">' +
+          '<div class="detail-section-title">Status &amp; Assignment</div>' +
+          '<div class="detail-grid">' +
+          '<div class="detail-item">' +
+          '<div class="d-label">Status</div>' +
+          '<div class="field"><select id="editStatus">' +
+          "<option" +
+          (record.status === "Open" ? " selected" : "") +
+          ">Open</option>" +
+          "<option" +
+          (record.status === "Closed" ? " selected" : "") +
+          ">Closed</option>" +
+          "</select></div>" +
+          "</div>" +
+          '<div class="detail-item">' +
+          '<div class="d-label">Priority</div>' +
+          '<div class="field"><select id="editPriority">' +
+          "<option" +
+          (record.priority === "High" ? " selected" : "") +
+          ">High</option>" +
+          "<option" +
+          (record.priority === "Medium" ? " selected" : "") +
+          ">Medium</option>" +
+          "<option" +
+          (record.priority === "Low" ? " selected" : "") +
+          ">Low</option>" +
+          "</select></div>" +
+          "</div>" +
+          '<div class="detail-item">' +
+          '<div class="d-label">Pending From</div>' +
+          '<div class="field"><select id="editPendingFrom">' +
+          '<option value="">— None —</option>' +
+          '<option value="customer"' +
+          (record.pendingForCustomer ? " selected" : "") +
+          ">Pending from Customer</option>" +
+          '<option value="fastech"' +
+          (record.pendingForFastech ? " selected" : "") +
+          ">Pending from Fastech</option>" +
+          '<option value="oem"' +
+          (record.pendingForOem ? " selected" : "") +
+          ">Pending from OEM</option>" +
+          "</select></div>" +
+          "</div>" +
+          '<div class="detail-item full">' +
+          '<div class="d-label">Assigned To Team</div>' +
+          '<div class="field"><input id="editAssignedTeam" type="text" value="' +
+          esc(record.assignedTeam || "") +
+          '" placeholder="Enter team name"/></div>' +
+          "</div>" +
+          '<div class="detail-item full">' +
+          '<div class="d-label">Assigned to person</div>' +
+          '<div class="field"><input id="editAssignedName" type="text" value="' +
+          esc(record.assignedName || "") +
+          '" placeholder="Enter assignee name"/></div>' +
+          "</div>" +
+          '<div class="detail-item full">' +
+          '<div class="d-label">Internal Note (not visible to customer)</div>' +
+          '<div class="field"><textarea id="editInternalNote" placeholder="Internal notes...">' +
+          esc(record.internalNote || "") +
+          "</textarea></div>" +
+          "</div>" +
+          '<div class="detail-item full">' +
+          '<div class="d-label">Customer-Facing Note</div>' +
+          '<div class="field"><textarea id="editCustomerFeedback" placeholder="Internal customer-facing note (saved with the request).">' +
+          esc(record.customerFeedback || "") +
+          "</textarea></div>" +
+          "</div>" +
+          '<div class="detail-item"><div class="d-label">Created</div><div class="d-value">' +
+          esc(record.createdAt || "—") +
+          "</div></div>" +
+          '<div class="detail-item"><div class="d-label">Updated</div><div class="d-value">' +
+          esc(record.updatedAt || "—") +
+          "</div></div>" +
+          "</div>" +
+          '<div class="approval-section">' +
+          '<div class="detail-section-title">Ticket Actions</div>' +
+          '<p class="td-sub">Click below to close this support ticket and notify the customer by email.</p>' +
+          '<div class="approval-actions">' +
+          '<button class="btn btn-primary" id="ticketClosedBtn" type="button"' +
+          (record.status === "Closed" ? " disabled" : "") +
+          ">" +
+          (record.status === "Closed" ? "✓ Ticket Closed" : "Close Ticket") +
+          "</button>" +
+          "</div>" +
+          (record.status === "Closed"
+            ? '<div class="approval-status-note approved">' +
+              (record.customerMailStatus === "failed"
+                ? "Ticket closed. Failed to Mail the customer."
+                : "Ticket closed. The customer was notified by email.") +
+              "</div>"
+            : "") +
+          "</div>" +
+          "</div>";
+
+        document.getElementById("modalBody").innerHTML = body;
+        document
+          .getElementById("ticketClosedBtn")
+          .addEventListener("click", closeTicket);
+        document.getElementById("detailModal").classList.add("open");
+      }
+
+      function closeModal() {
+        document.getElementById("detailModal").classList.remove("open");
+        currentDetail = null;
+      }
+
+      async function saveChanges() {
+        if (!currentDetail) return;
+        const pendingFrom = document.getElementById("editPendingFrom").value;
+        const formData = new FormData();
+        formData.append("status", document.getElementById("editStatus").value);
+        formData.append(
+          "priority",
+          document.getElementById("editPriority").value,
+        );
+        formData.append(
+          "assignedTeam",
+          document.getElementById("editAssignedTeam").value,
+        );
+        formData.append(
+          "assignedName",
+          document.getElementById("editAssignedName")
+            ? document.getElementById("editAssignedName").value
+            : "",
+        );
+        formData.append(
+          "internalNote",
+          document.getElementById("editInternalNote").value,
+        );
+        formData.append(
+          "customerFeedback",
+          document.getElementById("editCustomerFeedback").value,
+        );
+        formData.append(
+          "pendingForCustomer",
+          pendingFrom === "customer" ? "Pending from Customer" : "",
+        );
+        formData.append(
+          "pendingForFastech",
+          pendingFrom === "fastech" ? "Pending from Fastech" : "",
+        );
+        formData.append(
+          "pendingForOem",
+          pendingFrom === "oem" ? "Pending from OEM" : "",
+        );
+        const fileInput = document.getElementById("editAttachment");
+        if (fileInput && fileInput.files) {
+          for (const f of fileInput.files) formData.append("images", f);
+        }
+
+        setBtnLoading("saveChangesBtn", true, "Save Changes", "Saving…");
+
+        try {
+          const res = await fetch(
+            "/api/support/" + encodeURIComponent(currentDetail.id),
+            {
+              method: "PUT",
+              body: formData,
+            },
+          );
+          if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.message || "Update failed");
+          }
+          showToast("Updated successfully.", "success");
+          closeModal();
+          await loadSupport();
+        } catch (err) {
+          setBtnLoading("saveChangesBtn", false, "Save Changes");
+          showToast("Failed to update: " + err.message, "error");
+        }
+      }
+
+      async function closeTicket() {
+        if (!currentDetail) return;
+        await applySupportDecision("ticketClosed");
+      }
+
+      async function applySupportDecision(approvalDecision) {
+        if (!currentDetail) return;
+        setBtnLoading("ticketClosedBtn", true, "Close Ticket", "Closing…");
+        try {
+          const res = await fetch(
+            "/api/support/" + encodeURIComponent(currentDetail.id),
+            {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                approvalDecision,
+              }),
+            },
+          );
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.message || "Update failed");
+          const mailMessage = data.emails?.customer?.error
+            ? "Failed to Mail the customer."
+            : "Customer was notified by email.";
+          currentDetail.status = "Closed";
+          currentDetail.customerMailStatus = data.emails?.customer?.error
+            ? "failed"
+            : "sent";
+          const idx = allSupport.findIndex(function (r) {
+            return r.id === currentDetail.id;
+          });
+          if (idx >= 0) allSupport[idx] = currentDetail;
+          openDetail(currentDetail.id);
+          showToast(
+            mailMessage,
+            data.emails?.customer?.error ? "error" : "success",
+          );
+          loadSupport();
+        } catch (err) {
+          setBtnLoading("ticketClosedBtn", false, "Close Ticket");
+          showToast("Failed to update: " + err.message, "error");
+        }
+      }
+
+      document
+        .getElementById("detailModal")
+        .addEventListener("click", function (e) {
+          if (e.target && e.target.id === "detailModal") closeModal();
+        });
+
+      ensureAuth();
+      loadSupport();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1332 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FASCAL — Customer Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --bg1: #08121f;
+        --bg2: #0f172a;
+        --border: rgba(255, 255, 255, 0.14);
+        --text: #f8fafc;
+        --muted: #cbd5e1;
+        --primary: #38bdf8;
+        --primary2: #0ea5e9;
+        --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        --r-xl: 28px;
+      }
+      html {
+        font-family: Inter, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      body {
+        min-height: 100vh;
+        background:
+          radial-gradient(
+            circle at top left,
+            rgba(56, 189, 248, 0.18),
+            transparent 28%
+          ),
+          radial-gradient(
+            circle at right top,
+            rgba(14, 165, 233, 0.15),
+            transparent 24%
+          ),
+          linear-gradient(180deg, var(--bg1), var(--bg2));
+        color: var(--text);
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+      .shell {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 18px 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(8, 18, 31, 0.5);
+        backdrop-filter: blur(14px);
+        position: sticky;
+        top: 0;
+        z-index: 20;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .logo {
+        width: 46px;
+        height: 46px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, var(--primary), var(--primary2));
+        display: grid;
+        place-items: center;
+        box-shadow: 0 12px 28px rgba(14, 165, 233, 0.28);
+      }
+      .logo svg {
+        width: 22px;
+        height: 22px;
+      }
+      .brand h1 {
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1;
+      }
+      .brand p {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        opacity: 0.7;
+        margin-top: 4px;
+      }
+      .btn {
+        min-height: 42px;
+        padding: 0 16px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--text);
+        cursor: pointer;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: 0.15s ease;
+      }
+      .btn:hover {
+        background: rgba(255, 255, 255, 0.12);
+      }
+      .btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+      .spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.35);
+        border-top-color: #fff;
+        border-radius: 50%;
+        display: inline-block;
+        vertical-align: -2px;
+        margin-right: 8px;
+        animation: spin 0.7s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary2));
+        border-color: transparent;
+        color: #fff;
+        box-shadow: 0 10px 24px rgba(14, 165, 233, 0.28);
+      }
+      .hero {
+        padding: 28px 24px 16px;
+      }
+      .hero-card {
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.1),
+          rgba(255, 255, 255, 0.06)
+        );
+        border: 1px solid var(--border);
+        border-radius: 30px;
+        box-shadow: var(--shadow);
+        padding: 24px;
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 20px;
+      }
+      .hero-copy h2 {
+        font-size: 34px;
+        line-height: 1.1;
+        letter-spacing: -0.05em;
+        max-width: 14ch;
+      }
+      .hero-copy p {
+        color: var(--muted);
+        margin-top: 12px;
+        max-width: 58ch;
+        line-height: 1.75;
+      }
+      .hero-badges {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 18px;
+      }
+      .badge {
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .hero-side {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 24px;
+        padding: 18px;
+        display: grid;
+        gap: 12px;
+        align-content: start;
+      }
+      .mini-stat {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 18px;
+        padding: 14px;
+      }
+      .mini-stat span {
+        display: block;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .mini-stat strong {
+        font-size: 28px;
+        line-height: 1;
+      }
+      .main {
+        padding: 8px 24px 28px;
+        display: grid;
+        gap: 18px;
+      }
+      .panel {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid var(--border);
+        border-radius: var(--r-xl);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      .panel-head {
+        padding: 18px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .panel-head h3 {
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+      }
+      .panel-head p {
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .panel-body {
+        padding: 18px 20px 20px;
+      }
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .field.full {
+        grid-column: 1/-1;
+      }
+      .search-results {
+        display: grid;
+        gap: 6px;
+        margin-top: 6px;
+      }
+      .search-result {
+        width: 100%;
+        text-align: left;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(8, 15, 27, 0.72);
+        color: var(--text);
+        cursor: pointer;
+      }
+      .search-result:hover,
+      .search-result.active {
+        background: rgba(56, 189, 248, 0.16);
+        border-color: rgba(56, 189, 248, 0.4);
+      }
+      .search-result.empty {
+        cursor: default;
+        color: var(--muted);
+      }
+      label {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        color: #e2e8f0;
+      }
+      label .req {
+        color: #f87171;
+        margin-left: 3px;
+        font-size: 13px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        min-height: 44px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(15, 23, 42, 0.58);
+        color: var(--text);
+        padding: 11px 14px;
+        outline: none;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+      }
+      textarea {
+        min-height: 112px;
+        resize: vertical;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: rgba(56, 189, 248, 0.8);
+        box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.12);
+      }
+      input[type="file"] {
+        padding: 10px 14px;
+        cursor: pointer;
+        min-height: 44px;
+      }
+      input[type="file"]::-webkit-file-upload-button {
+        background: linear-gradient(135deg, var(--primary), var(--primary2));
+        border: none;
+        border-radius: 8px;
+        color: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 12px;
+        padding: 6px 12px;
+        margin-right: 10px;
+      }
+      .serial-group {
+        grid-column: 1/-1;
+        display: none;
+        gap: 14px;
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .serial-group.active {
+        display: grid;
+      }
+      .addr-group {
+        grid-column: 1/-1;
+        display: none;
+        gap: 14px;
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .addr-group.active {
+        display: grid;
+      }
+      .section-divider {
+        grid-column: 1/-1;
+        border: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        margin: 4px 0;
+      }
+      .section-divider.hidden {
+        display: none;
+      }
+      .section-label {
+        grid-column: 1/-1;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        color: var(--muted);
+        padding-bottom: 2px;
+      }
+      .note {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 8px;
+      }
+      .static-box {
+        width: 100%;
+        max-height: 140px;
+        overflow-y: auto;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(15, 23, 42, 0.58);
+        color: var(--muted);
+        padding: 12px 14px;
+        font-size: 13.5px;
+        line-height: 1.6;
+        white-space: pre-line;
+      }
+      .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+      .success,
+      .error {
+        display: none;
+        margin-top: 16px;
+        padding: 14px 16px;
+        border-radius: 16px;
+        font-weight: 600;
+        border: 1px solid transparent;
+      }
+      .success {
+        background: rgba(34, 197, 94, 0.14);
+        color: #dcfce7;
+        border-color: rgba(34, 197, 94, 0.25);
+      }
+      .error {
+        background: rgba(239, 68, 68, 0.14);
+        color: #fee2e2;
+        border-color: rgba(239, 68, 68, 0.25);
+      }
+      .footer {
+        padding: 0 24px 24px;
+        color: rgba(226, 232, 240, 0.72);
+        font-size: 12px;
+      }
+      @media (max-width: 980px) {
+        .hero-card {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 720px) {
+        .topbar,
+        .hero,
+        .main,
+        .footer {
+          padding-left: 14px;
+          padding-right: 14px;
+        }
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+        .serial-group {
+          grid-template-columns: 1fr;
+        }
+        .addr-group {
+          grid-template-columns: 1fr;
+        }
+        .hero-copy h2 {
+          font-size: 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <div class="logo">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M4 19h16M6 15h12M8 11h8M10 7h4" />
+            </svg>
+          </div>
+          <div>
+            <h1>FASCAL</h1>
+            <p>Customer Portal</p>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="scrollToForm()">
+          New Request
+        </button>
+      </header>
+
+      <section class="hero">
+        <div class="hero-card">
+          <div class="hero-copy">
+            <h2>Submit your service request in a few simple steps.</h2>
+            <p>
+              Use this portal to raise a new TMI request directly with FASCAL.
+              Fill in your details and submit — our team will follow up with
+              you.
+            </p>
+            <div class="hero-badges">
+              <div class="badge">Customer portal</div>
+              <div class="badge">Fast submission</div>
+              <div class="badge">Secure</div>
+            </div>
+          </div>
+          <div class="hero-side">
+            <div class="mini-stat">
+              <span>New Request</span><strong>Fast</strong>
+            </div>
+            <div class="mini-stat">
+              <span>Support</span><strong>Clean</strong>
+            </div>
+            <div class="mini-stat">
+              <span>Portal</span><strong>Secure</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <main class="main">
+        <section class="panel" id="formPanel">
+          <div class="panel-head">
+            <div>
+              <h3>Raise a Request</h3>
+              <p>
+                Fill in the details below and submit to the service team. Fields
+                marked <span class="req">*</span> are mandatory.
+              </p>
+            </div>
+          </div>
+          <div class="panel-body">
+            <form class="form-grid" id="requestForm">
+              <div class="section-label">Customer Information</div>
+
+              <div class="field">
+                <label>Customer Name <span class="req">*</span></label>
+                <input id="name" type="text" placeholder="Customer name" />
+              </div>
+              <div class="field">
+                <label>Email <span class="req">*</span></label>
+                <input id="email" type="email" placeholder="name@company.com" />
+              </div>
+              <div class="field">
+                <label>Phone</label>
+                <input id="phone" type="text" placeholder="Mobile number" />
+              </div>
+              <div class="field">
+                <label>Company</label>
+                <input id="company" type="text" placeholder="Company name" />
+              </div>
+              <div class="field">
+                <label>Designation</label>
+                <input
+                  id="designation"
+                  type="text"
+                  placeholder="Your designation"
+                />
+              </div>
+              <div class="field">
+                <label>Location</label>
+                <input id="location" type="text" placeholder="Your location" />
+              </div>
+
+              <hr class="section-divider" />
+
+              <div class="section-label">Service Details</div>
+
+              <div class="field">
+                <label>Types of OEM <span class="req">*</span></label>
+                <select id="oem">
+                  <option value="">Select OEM</option>
+                  <option value="VeEX">VeEX</option>
+                  <option value="Narda">Narda</option>
+                  <option value="Cubro">Cubro</option>
+                  <option value="ATDI">ATDI</option>
+                  <option value="Others">Others</option>
+                </select>
+              </div>
+
+              <div class="field" id="oemOtherWrap" style="display: none">
+                <label>Specify OEM <span class="req">*</span></label>
+                <input id="oemOther" type="text" placeholder="Type OEM name" />
+              </div>
+
+              <div class="field">
+                <label>Service Type <span class="req">*</span></label>
+                <select id="serviceType">
+                  <option value="">Select service type</option>
+                  <option value="Support">Support</option>
+                  <option value="Calibration">Calibration</option>
+                  <option value="Repair">Repair</option>
+                </select>
+              </div>
+
+              <div class="field" id="poNumberField" style="display: none">
+                <label>PO Number</label>
+                <input id="poNumber" type="text" placeholder="PO number" />
+              </div>
+
+              <div class="field" id="poDateField" style="display: none">
+                <label>PO Date</label>
+                <input id="poDate" type="date" />
+              </div>
+
+              <div class="field" id="productField">
+                <label>Product Model <span class="req">*</span></label>
+                <input
+                  id="productSearch"
+                  type="text"
+                  placeholder="Search model..."
+                  autocomplete="off"
+                />
+                <div class="search-results" id="productResults"></div>
+                <input id="product" type="hidden" />
+                <div class="note">
+                  Type to search from available models or enter your own model.
+                </div>
+              </div>
+
+              <div class="field" id="productManualField" style="display: none">
+                <label>Enter Product Model <span class="req">*</span></label>
+                <input
+                  id="productManual"
+                  type="text"
+                  placeholder="Enter product model"
+                />
+              </div>
+
+              <div class="field">
+                <label>Software Version</label>
+                <input
+                  id="softwareVersion"
+                  type="text"
+                  placeholder="Software version"
+                />
+              </div>
+
+              <hr class="section-divider" id="dividerSerial" />
+
+              <div class="serial-group" id="serialGroup">
+                <div class="section-label" style="grid-column: 1/-1">
+                  Serial Number
+                </div>
+
+                <div class="field" id="fieldSingleSerial">
+                  <label>S/N</label>
+                  <input
+                    id="serialSingle"
+                    type="text"
+                    placeholder="Serial number"
+                  />
+                </div>
+
+                <div class="field" id="fieldBaseUnit">
+                  <label
+                    >Base Unit S/N
+                    <span class="req" id="reqBaseUnit" style="display: none"
+                      >*</span
+                    ></label
+                  >
+                  <input
+                    id="serialBaseUnit"
+                    type="text"
+                    placeholder="Base unit serial number"
+                  />
+                </div>
+
+                <div class="field" id="fieldRfCable">
+                  <label>RF Cable S/N</label>
+                  <input
+                    id="serialRfCable"
+                    type="text"
+                    placeholder="RF cable serial number"
+                  />
+                </div>
+
+                <div class="field" id="fieldAntenna">
+                  <label
+                    >Probe/Antenna S/N
+                    <span class="req" id="reqAntenna" style="display: none"
+                      >*</span
+                    ></label
+                  >
+                  <input
+                    id="serialAntenna"
+                    type="text"
+                    placeholder="Probe/antenna serial number"
+                  />
+                </div>
+              </div>
+
+              <hr class="section-divider" id="dividerIssue" />
+
+              <div class="section-label">Details</div>
+
+              <div class="field full">
+                <label>Description of Problem</label>
+                <textarea
+                  id="description"
+                  placeholder="Describe the problem clearly (optional)"
+                ></textarea>
+              </div>
+
+              <div class="field full">
+                <label
+                  >Upload Image
+                  <span
+                    style="
+                      font-weight: 400;
+                      text-transform: none;
+                      letter-spacing: 0;
+                      opacity: 0.7;
+                    "
+                    >(optional — jpg, png, pdf)</span
+                  ></label
+                >
+                <input
+                  id="imageUpload"
+                  type="file"
+                  accept="image/*,.pdf"
+                  multiple
+                />
+                <div class="note">
+                  You may attach photos of the unit or relevant documents.
+                </div>
+              </div>
+
+              <hr class="section-divider" id="dividerAddress" />
+
+              <div class="section-label" id="addressSectionLabel">
+                Addresses
+              </div>
+
+              <div class="addr-group" id="addressGroup">
+                <div class="field full">
+                  <label>Billing Address</label>
+                  <textarea
+                    id="billingAddress"
+                    placeholder="Billing address"
+                  ></textarea>
+                </div>
+                <div class="field full">
+                  <label>Return Address</label>
+                  <textarea
+                    id="returnAddress"
+                    placeholder="Return address"
+                  ></textarea>
+                </div>
+                <div class="field full" id="fieldCalCert">
+                  <label
+                    >Address to be Printed on Calibration Certificate</label
+                  >
+                  <textarea
+                    id="calCertificateAddress"
+                    placeholder="Address to be printed on calibration certificate"
+                  ></textarea>
+                </div>
+
+                <div class="field full">
+                  <label>Material to be Sent to</label>
+                  <div class="static-box">
+                    Fastech Telecommunications (India) Pvt. Ltd., FASTECH PARAM,
+                    EL- 44, Electronic Zone, TTC Industrial Area, MIDC, Mahape,
+                    Navi Mumbai-400710. Tel. No. 022-28353636 Ph. No.
+                    +91 9867950611 Our GST No. 27AAACF4021B1ZE
+                  </div>
+                </div>
+              </div>
+
+              <hr class="section-divider" />
+
+              <div class="section-label">Additional Information</div>
+
+              <div class="field full">
+                <textarea
+                  id="additionalInfo"
+                  placeholder="Anything else you'd like the service team to know (optional)"
+                ></textarea>
+              </div>
+
+              <div
+                class="field full"
+                style="grid-column: 1/-1; margin-top: 6px"
+              >
+                <div class="actions" style="margin-top: 0">
+                  <button type="button" class="btn btn-primary" id="submitBtn">
+                    Submit Request
+                  </button>
+                </div>
+              </div>
+            </form>
+            <div class="success" id="successBox"></div>
+            <div class="error" id="errorBox"></div>
+          </div>
+        </section>
+      </main>
+
+      <div class="footer">
+        This customer portal is separate from the internal team dashboard.
+      </div>
+    </div>
+
+    <script>
+      const API = window.location.origin;
+      const OEM_MODELS = {
+        Narda: [
+          "SRM-3006",
+          "NMB-520",
+          "NBM-550",
+          "Field Man",
+          "AMB-8059",
+          "Smart AMC",
+          "Signal Shark",
+          "Antenna Handle",
+          "Antenna",
+          "RF Cable",
+          "RadMan2",
+          "Nardalert S3",
+          "BFD-400",
+          "EHP-50F",
+          "EHP-200A/AC",
+          "HP-01",
+          "ELT-400",
+          "ADFA",
+          "IDA2",
+        ],
+
+        VeEX: [
+          "MTTplus-410",
+          "MTTplus-410+",
+          "FX40-OLS",
+          "FX45-OPM",
+          "MTX150/MTX150+",
+          "FX150+",
+          "FX40",
+          "TX300s",
+          "OPX-BOXe",
+          "RXT-4100+",
+          "FX81",
+          "RFTS-400",
+          "RTU-4100",
+          "RTU-4000",
+          "OXC-4000",
+          "OXA-4000",
+          "FL41",
+          "DI-1000",
+          "DI-3000",
+          "FX10+",
+          "MTX642",
+          "MTX640",
+          "RXT-1200",
+          "MTX150x Lite",
+          "MPA-HD",
+          "MPA",
+          "WX90",
+          "PX92",
+          "MTX90",
+          "VeSion",
+          "FX120",
+          "FX86",
+          "FX82/FX83/FX84",
+          "FX45/48",
+        ],
+
+        Cubro: [
+          "EXA48800",
+          "EXA48200",
+          "EXA32400",
+          "EXA64100",
+          "EXA32100A",
+          "EX48800",
+          "EX48200",
+          "Aggregator C400/64/48/32",
+          "EX6-3",
+          "EX5-3",
+        ],
+
+        ATDI: [
+          "HTZ Communications",
+          "ICS Manager",
+          "HTZ Warfare",
+          "HTZ Analyzer",
+        ],
+      };
+
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function updateSerialFields() {
+        const oem = document.getElementById("oem").value;
+        const group = document.getElementById("serialGroup");
+        const single = document.getElementById("fieldSingleSerial");
+        const base = document.getElementById("fieldBaseUnit");
+        const rf = document.getElementById("fieldRfCable");
+        const ant = document.getElementById("fieldAntenna");
+
+        if (!oem) {
+          group.classList.remove("active");
+          return;
+        }
+
+        group.classList.add("active");
+
+        if (["VeEX", "Cubro", "ATDI", "Others"].includes(oem)) {
+          single.style.display = "";
+          base.style.display = "none";
+          rf.style.display = "none";
+          ant.style.display = "none";
+        } else if (oem === "Narda") {
+          single.style.display = "none";
+          base.style.display = "";
+          rf.style.display = "";
+          ant.style.display = "";
+        } else {
+          single.style.display = "";
+          base.style.display = "none";
+          rf.style.display = "none";
+          ant.style.display = "none";
+        }
+      }
+
+      function updateNardaCalibrationRequirement() {
+        const isNardaCalibration =
+          document.getElementById("oem").value === "Narda" &&
+          document.getElementById("serviceType").value === "Calibration";
+        document.getElementById("reqBaseUnit").style.display =
+          isNardaCalibration ? "" : "none";
+        document.getElementById("reqAntenna").style.display = isNardaCalibration
+          ? ""
+          : "none";
+      }
+
+      function updateVisibilityForServiceType(serviceType) {
+        const addressGroup = document.getElementById("addressGroup");
+        const addressLabel = document.getElementById("addressSectionLabel");
+        const dividerAddress = document.getElementById("dividerAddress");
+        const fieldCalCert = document.getElementById("fieldCalCert");
+        const serialGroup = document.getElementById("serialGroup");
+        const dividerSerial = document.getElementById("dividerSerial");
+        const poNumberField = document.getElementById("poNumberField");
+        const poDateField = document.getElementById("poDateField");
+
+        if (serviceType === "Support") {
+          addressGroup.classList.remove("active");
+          addressLabel.style.display = "none";
+          dividerAddress.classList.add("hidden");
+          serialGroup.classList.remove("active");
+          dividerSerial.classList.add("hidden");
+          poNumberField.style.display = "none";
+          poDateField.style.display = "none";
+          document.getElementById("poNumber").value = "";
+          document.getElementById("poDate").value = "";
+          return;
+        }
+
+        dividerSerial.classList.remove("hidden");
+        updateSerialFields();
+
+        addressGroup.classList.add("active");
+        addressLabel.style.display = "";
+        dividerAddress.classList.remove("hidden");
+
+        if (serviceType === "Calibration") {
+          fieldCalCert.style.display = "";
+          poNumberField.style.display = "";
+          poDateField.style.display = "";
+        } else {
+          fieldCalCert.style.display = "none";
+          poNumberField.style.display = "none";
+          poDateField.style.display = "none";
+          document.getElementById("calCertificateAddress").value = "";
+          document.getElementById("poNumber").value = "";
+          document.getElementById("poDate").value = "";
+        }
+      }
+
+      function renderProductResults(query) {
+        const oem = document.getElementById("oem").value;
+        const results = document.getElementById("productResults");
+        const productInput = document.getElementById("product");
+        const searchInput = document.getElementById("productSearch");
+
+        if (!oem || oem === "Others") {
+          results.innerHTML = "";
+          return;
+        }
+
+        const options = OEM_MODELS[oem] || [];
+        const filtered = options.filter((item) =>
+          item.toLowerCase().includes(query.toLowerCase()),
+        );
+
+        if (!query.trim()) {
+          results.innerHTML = "";
+          return;
+        }
+
+        if (!filtered.length) {
+          results.innerHTML =
+            '<div class="search-result empty">No matching models found. You can still type your own model.</div>';
+          return;
+        }
+
+        results.innerHTML = filtered
+          .map(
+            (item) => `
+      <button type="button" class="search-result" data-value="${escapeHtml(item)}">${escapeHtml(item)}</button>
+    `,
+          )
+          .join("");
+
+        results.querySelectorAll(".search-result").forEach((button) => {
+          button.addEventListener("click", () => {
+            const value = button.getAttribute("data-value");
+            productInput.value = value;
+            searchInput.value = value;
+            results.innerHTML = "";
+          });
+        });
+      }
+
+      function showAllProductModels() {
+        const oem = document.getElementById("oem").value;
+        const results = document.getElementById("productResults");
+        if (!oem || oem === "Others") return;
+        const options = OEM_MODELS[oem] || [];
+        if (!options.length) return;
+        const productInput = document.getElementById("product");
+        const searchInput = document.getElementById("productSearch");
+        results.innerHTML = options
+          .map(
+            (item) => `
+      <button type="button" class="search-result" data-value="${escapeHtml(item)}">${escapeHtml(item)}</button>
+    `,
+          )
+          .join("");
+        results.querySelectorAll(".search-result").forEach((button) => {
+          button.addEventListener("click", () => {
+            const value = button.getAttribute("data-value");
+            productInput.value = value;
+            searchInput.value = value;
+            results.innerHTML = "";
+          });
+        });
+      }
+
+      function updateProductModelField() {
+        const oem = document.getElementById("oem").value;
+        const productField = document.getElementById("productField");
+        const productManualField =
+          document.getElementById("productManualField");
+        const productInput = document.getElementById("product");
+        const productSearch = document.getElementById("productSearch");
+        const productManual = document.getElementById("productManual");
+        const results = document.getElementById("productResults");
+
+        if (oem === "Others") {
+          productField.style.display = "none";
+          productManualField.style.display = "";
+          productManual.value = productInput.value || "";
+          productInput.value = "";
+          productSearch.value = "";
+          results.innerHTML = "";
+          return;
+        }
+
+        productField.style.display = "";
+        productManualField.style.display = "none";
+        productManual.value = "";
+        const options = OEM_MODELS[oem] || [];
+        if (!options.length) {
+          productInput.value = "";
+          productSearch.value = "";
+          results.innerHTML = "";
+          return;
+        }
+
+        const currentValue = productInput.value;
+        if (currentValue && options.includes(currentValue)) {
+          productSearch.value = currentValue;
+        } else {
+          productInput.value = "";
+          productSearch.value = "";
+        }
+        results.innerHTML = "";
+      }
+
+      document.getElementById("oem").addEventListener("change", () => {
+        document.getElementById("serialSingle").value = "";
+        document.getElementById("serialBaseUnit").value = "";
+        document.getElementById("serialRfCable").value = "";
+        document.getElementById("serialAntenna").value = "";
+
+        const fieldOemOther = document.getElementById("oemOtherWrap");
+        if (document.getElementById("oem").value === "Others") {
+          fieldOemOther.style.display = "";
+        } else {
+          fieldOemOther.style.display = "none";
+          document.getElementById("oemOther").value = "";
+        }
+
+        if (document.getElementById("serviceType").value !== "Support") {
+          updateSerialFields();
+        }
+        updateNardaCalibrationRequirement();
+        updateProductModelField();
+      });
+
+      document.getElementById("serviceType").addEventListener("change", () => {
+        updateVisibilityForServiceType(
+          document.getElementById("serviceType").value,
+        );
+        updateNardaCalibrationRequirement();
+      });
+
+      document
+        .getElementById("productSearch")
+        .addEventListener("input", (event) => {
+          document.getElementById("product").value = event.target.value.trim();
+          renderProductResults(event.target.value);
+        });
+
+      document.getElementById("productSearch").addEventListener("focus", () => {
+        const current = document.getElementById("productSearch").value;
+        if (current.trim()) {
+          renderProductResults(current);
+        } else {
+          showAllProductModels();
+        }
+      });
+
+      document
+        .getElementById("productManual")
+        .addEventListener("input", (event) => {
+          document.getElementById("product").value = event.target.value.trim();
+        });
+
+      document.addEventListener("click", (event) => {
+        const productField = document.getElementById("productField");
+        if (!productField.contains(event.target)) {
+          document.getElementById("productResults").innerHTML = "";
+        }
+      });
+
+      updateVisibilityForServiceType("");
+      document.getElementById("addressGroup").classList.remove("active");
+      document.getElementById("dividerSerial").classList.add("hidden");
+      document.getElementById("dividerAddress").classList.add("hidden");
+      document.getElementById("addressSectionLabel").style.display = "none";
+      updateNardaCalibrationRequirement();
+      updateProductModelField();
+
+      function show(msg, type) {
+        const successBox = document.getElementById("successBox");
+        const errorBox = document.getElementById("errorBox");
+        successBox.style.display = "none";
+        errorBox.style.display = "none";
+        const box = type === "success" ? successBox : errorBox;
+        box.textContent = msg;
+        box.style.display = "block";
+      }
+
+      document
+        .getElementById("submitBtn")
+        .addEventListener("click", async function submitRequest() {
+          const oemSelected = document.getElementById("oem").value.trim();
+          const oemOther = document.getElementById("oemOther").value.trim();
+          const oem = oemSelected === "Others" ? oemOther : oemSelected;
+          const serviceType = document
+            .getElementById("serviceType")
+            .value.trim();
+          const productValue =
+            oemSelected === "Others"
+              ? document.getElementById("productManual").value.trim()
+              : document.getElementById("product").value.trim();
+          const poNumber =
+            serviceType === "Calibration"
+              ? document.getElementById("poNumber").value.trim()
+              : "";
+          const poDate =
+            serviceType === "Calibration"
+              ? document.getElementById("poDate").value.trim()
+              : "";
+
+          const payload = {
+            name: document.getElementById("name").value.trim(),
+            email: document.getElementById("email").value.trim(),
+            phone: document.getElementById("phone").value.trim(),
+            company: document.getElementById("company").value.trim(),
+            designation: document.getElementById("designation").value.trim(),
+            location: document.getElementById("location").value.trim(),
+            oem,
+            serviceType,
+            product: productValue,
+            poNumber,
+            poDate,
+            softwareVersion: document
+              .getElementById("softwareVersion")
+              .value.trim(),
+            serialSingle: document.getElementById("serialSingle").value.trim(),
+            serialBaseUnit: document
+              .getElementById("serialBaseUnit")
+              .value.trim(),
+            serialRfCable: document
+              .getElementById("serialRfCable")
+              .value.trim(),
+            serialAntenna: document
+              .getElementById("serialAntenna")
+              .value.trim(),
+            billingAddress: document
+              .getElementById("billingAddress")
+              .value.trim(),
+            returnAddress: document
+              .getElementById("returnAddress")
+              .value.trim(),
+            calCertificateAddress: document
+              .getElementById("calCertificateAddress")
+              .value.trim(),
+            description: document.getElementById("description").value.trim(),
+            additionalInfo: document
+              .getElementById("additionalInfo")
+              .value.trim(),
+          };
+
+          if (
+            !payload.name ||
+            !payload.email ||
+            !oemSelected ||
+            (oemSelected === "Others" && !oemOther) ||
+            !payload.serviceType ||
+            !payload.product
+          ) {
+            show(
+              "Please fill all required fields: Customer Name, Email, OEM, Service Type, and Product Model.",
+              "error",
+            );
+            return;
+          }
+
+          if (
+            oemSelected === "Narda" &&
+            serviceType === "Calibration" &&
+            (!payload.serialBaseUnit || !payload.serialAntenna)
+          ) {
+            show(
+              "For Narda calibration requests, Base Unit S/N and Probe/Antenna S/N are required.",
+              "error",
+            );
+            return;
+          }
+
+          const isSupport = serviceType === "Support";
+          const endpoint = isSupport
+            ? `${API}/api/support`
+            : `${API}/api/requests`;
+
+          const submitBtn = document.getElementById("submitBtn");
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<span class="spinner"></span>Submitting…';
+
+          try {
+            const formData = new FormData();
+            Object.entries(payload).forEach(([k, v]) => {
+              if (
+                isSupport &&
+                (k === "calCertificateAddress" ||
+                  k === "billingAddress" ||
+                  k === "returnAddress" ||
+                  k === "serialSingle" ||
+                  k === "serialBaseUnit" ||
+                  k === "serialRfCable" ||
+                  k === "serialAntenna")
+              )
+                return;
+              formData.append(k, v);
+            });
+
+            const files = document.getElementById("imageUpload").files;
+            for (let i = 0; i < files.length; i++) {
+              formData.append("images", files[i]);
+            }
+
+            const res = await fetch(endpoint, {
+              method: "POST",
+              body: formData,
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || "Submit failed");
+
+            let msg = isSupport
+              ? `Support request submitted successfully. Your ticket is ${data.id}.`
+              : `Request submitted successfully. Your TMI number is ${data.id}.`;
+
+            if (data.emails?.customer?.sent) {
+              msg += " A confirmation email has been sent to you.";
+            } else if (data.emails?.customer?.error) {
+              msg +=
+                " Note: the confirmation email failed to send, but your request was saved.";
+            }
+
+            if (data.emails?.team?.sent) {
+              msg += isSupport
+                ? " The support team has been notified by email."
+                : " The service team has been notified by email.";
+            } else if (data.emails?.team?.error) {
+              msg +=
+                " Note: the team notification email failed to send, but your request was saved.";
+            }
+
+            msg += isSupport
+              ? " The team will review and get back to you."
+              : "";
+
+            show(msg, "success");
+            document
+              .getElementById("formPanel")
+              .scrollIntoView({ behavior: "smooth" });
+          } catch (err) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Submit Request";
+            show(err.message || "Submit failed.", "error");
+          }
+        });
+
+      function scrollToForm() {
+        document
+          .getElementById("formPanel")
+          .scrollIntoView({ behavior: "smooth" });
+      }
+    </script>
+  </body>
+</html>

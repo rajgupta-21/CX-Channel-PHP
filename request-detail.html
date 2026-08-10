@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FASTECH Request Details</title>
+  <style>
+    :root{--bg:#f4f7fb;--card:#fff;--nav:#0d4a8d;--nav2:#0a3e77;--accent:#d61f3a;--text:#122033;--muted:#607089;--line:#d9e3ef;--soft:#eef4fb}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+    a{text-decoration:none;color:inherit}
+    .topbar{background:#0b2b4c;color:#fff;padding:10px 24px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:14px}
+    .header{background:#fff;border-bottom:1px solid var(--line);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--nav),var(--accent));display:grid;place-items:center;color:#fff;font-weight:800}
+    .brand h1{margin:0;font-size:18px;line-height:1.1}
+    .brand p{margin:2px 0 0;color:var(--muted);font-size:12px}
+    .btns{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;justify-content:center;padding:11px 18px;border-radius:10px;font-weight:700;border:1px solid transparent}
+    .btn-outline{background:#fff;border-color:var(--nav);color:var(--nav)}
+    .btn-red{background:var(--accent);color:#fff}
+    .nav{background:var(--nav);color:#fff;padding:0 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+    .nav a{padding:16px 16px;display:inline-flex;align-items:center;font-weight:600}
+    .nav a.active{background:rgba(255,255,255,.08);border-bottom:3px solid var(--accent)}
+    .wrap{max-width:1240px;margin:0 auto;padding:28px 24px 40px}
+    .hero{background:linear-gradient(180deg,var(--nav),var(--nav2));border-radius:22px;color:#fff;padding:28px 28px 30px;box-shadow:0 16px 40px rgba(10,62,119,.15)}
+    .hero h2{margin:0 0 10px;font-size:32px}
+    .hero p{margin:0;color:#d9e7f7;line-height:1.6;max-width:900px}
+    .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:22px;margin-top:22px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 30px rgba(18,32,51,.05)}
+    .card-head{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+    .card h3{margin:0;font-size:18px}
+    .note{font-size:13px;color:var(--muted);background:var(--soft);padding:10px 12px;border-radius:10px;border:1px solid var(--line)}
+    .section{padding:22px}
+    .pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .box{border:1px solid var(--line);border-radius:14px;padding:16px;background:#fff}
+    .label{font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--muted);margin-bottom:6px}
+    .value{font-size:15px;font-weight:600}
+    .timeline{padding:22px}
+    .step{border-left:3px solid var(--line);padding:0 0 18px 18px;position:relative}
+    .step:before{content:'';position:absolute;left:-7px;top:3px;width:12px;height:12px;border-radius:50%;background:var(--nav)}
+    .step strong{display:block;margin-bottom:4px}
+    .step span{color:var(--muted);font-size:14px;line-height:1.5}
+    .sidebar{padding:22px}
+    .sideitem{padding:16px;border:1px solid var(--line);border-radius:14px;background:#fff;margin-bottom:14px}
+    .sideitem strong{display:block;margin-bottom:6px}
+    .sideitem span{color:var(--muted);font-size:14px;line-height:1.5}
+    .footer{margin-top:22px;background:#0b2b4c;color:#fff;padding:18px 24px;text-align:center}
+    @media (max-width: 980px){.grid,.pair{grid-template-columns:1fr}.hero h2{font-size:26px}}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div>Mon - Fri 9:30 - 18:30 IST</div>
+    <div>+91 (22) 2835 3636 · service@fastech-india.com</div>
+  </div>
+  <header class="header">
+    <div class="brand">
+      <div class="logo">FP</div>
+      <div>
+        <h1>FASTECH</h1>
+        <p>REQUEST DETAILS</p>
+      </div>
+    </div>
+    <div class="btns">
+      <a class="btn btn-outline" href="index.html">Home</a>
+      <a class="btn btn-outline" href="requests.html">Requests</a>
+      <a class="btn btn-red" href="team-dashboard.html">Dashboard</a>
+    </div>
+  </header>
+  <nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="customer.html">Submit RMA</a>
+    <a href="team-login.html">Team Login</a>
+    <a href="team-dashboard.html">Team Dashboard</a>
+    <a href="requests.html">Requests</a>
+    <a class="active" href="request-detail.html">Request Detail</a>
+  </nav>
+  <div class="wrap">
+    <section class="hero">
+      <h2>RMA-2002</h2>
+      <p>Detailed view for one request. Use this page for notes, status updates, and coordination.</p>
+    </section>
+    <div class="grid">
+      <section class="card">
+        <div class="card-head">
+          <h3>Request Summary</h3>
+          <div class="note">Sample detail page for testing layout flow.</div>
+        </div>
+        <div class="section">
+          <div class="pair">
+            <div class="box"><div class="label">CUSTOMER</div><div class="value">XYZ Networks</div></div>
+            <div class="box"><div class="label">MODEL</div><div class="value">VeEX FX80</div></div>
+            <div class="box"><div class="label">SERVICE</div><div class="value">Repair</div></div>
+            <div class="box"><div class="label">STATUS</div><div class="value">In Progress</div></div>
+          </div>
+        </div>
+        <div class="timeline">
+          <div class="step"><strong>Received</strong><span>Request arrived and was added to the queue.</span></div>
+          <div class="step"><strong>Inspection</strong><span>Unit checked and issue confirmed.</span></div>
+          <div class="step"><strong>Repair</strong><span>Engineer is working on the device.</span></div>
+        </div>
+      </section>
+      <aside class="card sidebar">
+        <div class="sideitem"><strong>Next actions</strong><span>Add status update fields, comments, and file attachments later.</span></div>
+        <div class="sideitem"><strong>Use case</strong><span>This page works as the detail screen after a user clicks a request row.</span></div>
+      </aside>
+    </div>
+  </div>
+  <footer class="footer">FASTECH Request Details</footer>
+</body>
+</html>

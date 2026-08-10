@@ -1,0 +1,16 @@
+{
+  "name": "cx-channel/php",
+  "description": "FASCAL customer and team request portal - PHP backend",
+  "type": "project",
+  "require": {
+    "php": ">=8.1",
+    "ext-pdo": "*",
+    "ext-mbstring": "*",
+    "phpmailer/phpmailer": "^6.9"
+  },
+  "autoload": {
+    "psr-4": {
+      "CXChannel\\": "server/src/"
+    }
+  }
+}

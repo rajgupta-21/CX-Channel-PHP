@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Team Dashboard</title>
+  <style>
+    :root{--bg:#f4f7fb;--card:#fff;--nav:#0d4a8d;--accent:#d61f3a;--text:#122033;--muted:#607089;--line:#d9e3ef}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+    a{text-decoration:none;color:inherit}
+    .topbar{background:#0b2b4c;color:#fff;padding:10px 24px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:14px}
+    .header{background:#fff;border-bottom:1px solid var(--line);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--nav),var(--accent));display:grid;place-items:center;color:#fff;font-weight:800}
+    .brand h1{margin:0;font-size:18px}
+    .brand p{margin:2px 0 0;color:var(--muted);font-size:12px}
+    .nav{background:var(--nav);color:#fff;padding:0 24px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+    .nav a{padding:16px 16px;display:inline-flex;align-items:center;font-weight:600}
+    .nav a.active{background:rgba(255,255,255,.08);border-bottom:3px solid var(--accent)}
+    .wrap{max-width:1180px;margin:24px auto;padding:0 24px}
+    .panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:0 10px 22px rgba(13,74,141,.06)}
+    .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+    .stat{padding:18px;border:1px solid var(--line);border-radius:14px;background:#fff}
+    .stat strong{display:block;font-size:28px;margin-bottom:6px;color:var(--nav)}
+    .stat span{color:var(--muted)}
+    .section{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+    .section h2{margin:0 0 12px}
+    .toolbar{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0 16px}
+    .btn{border:none;border-radius:12px;padding:11px 16px;font-weight:700;cursor:pointer;font:inherit}
+    .btn-primary{background:var(--accent);color:#fff}
+    .btn-secondary{background:#eaf0f8;color:#27415f}
+    .table{width:100%;border-collapse:collapse}
+    .table th,.table td{padding:12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+    .table th{font-size:12px;color:#29415f;text-transform:uppercase;letter-spacing:.03em}
+    .badge{display:inline-block;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:700}
+    .open{background:#eef4ff;color:#1b57c6}
+    .progress{background:#fff4e5;color:#b25a00}
+    .done{background:#e8f6ee;color:#1f7a4a}
+    .pending{background:#fdecec;color:#c63b3b}
+    .empty{padding:20px;background:#f8fbff;border:1px dashed var(--line);border-radius:14px;color:var(--muted)}
+    .box{border:1px solid var(--line);border-radius:14px;padding:16px;background:#fff;line-height:1.7}
+    .clickable{color:var(--nav);font-weight:700;cursor:pointer;text-decoration:underline}
+    .footer{margin-top:28px;padding:18px 24px;background:#0b2b4c;color:#dce7f5;text-align:center}
+    @media (max-width:900px){.stats{grid-template-columns:1fr 1fr}}
+    @media (max-width:700px){.topbar,.header,.nav{padding-left:14px;padding-right:14px}.wrap{padding:0 14px}.stats{grid-template-columns:1fr}.table{display:block;overflow-x:auto}}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div>Mon - Fri 9.30 - 18.30</div>
+    <div>Call us: +91 22 2835 3636</div>
+  </div>
+
+  <header class="header">
+    <div class="brand">
+      <div class="logo">F</div>
+      <div>
+        <h1>Team Dashboard</h1>
+        <p>Live overview of submitted requests</p>
+      </div>
+    </div>
+    <div class="toolbar" style="margin:0">
+      <a class="btn btn-primary" href="team-support-dashboard.html">Support Dashboard</a>
+      <button class="btn btn-secondary" type="button" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <nav class="nav">
+    <a href="index.html">Home</a>
+    <a href="customer.html">Requests</a>
+    <a href="team-login.html">Team Login</a>
+    <a href="team-signup.html">Team Signup</a>
+    <a class="active" href="team-dashboard.html">Team Dashboard</a>
+  </nav>
+
+  <main class="wrap">
+    <section class="panel">
+      <div class="stats">
+        <div class="stat"><strong id="openCount">0</strong><span>Open Requests</span></div>
+        <div class="stat"><strong id="progressCount">0</strong><span>In Progress</span></div>
+        <div class="stat"><strong id="doneCount">0</strong><span>Completed</span></div>
+        <div class="stat"><strong id="totalCount">0</strong><span>Total Requests</span></div>
+      </div>
+
+      <div class="section">
+        <h2>Recent requests</h2>
+        <div class="toolbar">
+          <button class="btn btn-primary" type="button" onclick="loadRequests()">Refresh</button>
+          <button class="btn btn-secondary" type="button" onclick="clearAllData()">Clear Saved Requests</button>
+        </div>
+        <div id="requestArea"></div>
+      </div>
+
+      <div class="section">
+        <h2>Customer history</h2>
+        <div id="customerHistory" class="empty">Click a customer name to see previous requests.</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">FASTECH India Customer Portal</footer>
+
+  <script>
+    const session = JSON.parse(localStorage.getItem('fastech_team_session') || 'null');
+    if (!session) window.location.href = '/team-login.html';
+
+    function statusClass(status) {
+      const s = String(status || '').toLowerCase();
+      if (s.includes('progress') || s === 'review' || s === 'forwarded') return 'progress';
+      if (s.includes('complete') || s === 'approved' || s === 'resolved' || s === 'closed') return 'done';
+      if (s.includes('pending')) return 'pending';
+      return 'open';
+    }
+
+    function esc(v) {
+      return String(v || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    async function loadRequests() {
+      const area = document.getElementById('requestArea');
+      area.innerHTML = '<div class="empty">Loading requests...</div>';
+      try {
+        const res = await fetch('/api/requests');
+        const data = await res.json();
+        const open = data.filter(r => String(r.status || 'pending').toLowerCase() === 'pending').length;
+        const progress = data.filter(r => ['review','forwarded','in progress','progress'].includes(String(r.status || '').toLowerCase())).length;
+        const done = data.filter(r => ['approved','resolved','closed','complete','completed'].includes(String(r.status || '').toLowerCase())).length;
+
+        document.getElementById('openCount').textContent = open;
+        document.getElementById('progressCount').textContent = progress;
+        document.getElementById('doneCount').textContent = done;
+        document.getElementById('totalCount').textContent = data.length;
+
+        if (!data.length) {
+          area.innerHTML = '<div class="empty">No requests found yet.</div>';
+          return;
+        }
+
+        let rows = '';
+        for (let i = 0; i < data.length; i++) {
+          const r = data[i];
+          rows += '<tr>'
+            + '<td><span class="clickable" onclick="showTicket(\'' + esc(r.id) + '\')">' + esc(r.id || '-') + '</span></td>'
+            + '<td><span class="clickable" onclick="showCustomer(\'' + esc(r.name || '') + '\')">' + esc(r.name || '-') + '</span></td>'
+            + '<td>' + esc(r.email || '-') + '</td>'
+            + '<td>' + esc(r.serviceType || '-') + '</td>'
+            + '<td>' + esc(r.product || '-') + '</td>'
+            + '<td><span class="badge ' + statusClass(r.status || 'pending') + '">' + esc(r.status || 'pending') + '</span></td>'
+            + '<td>' + esc(r.createdAt || '-') + '</td>'
+            + '</tr>';
+        }
+
+        area.innerHTML = '<table class="table"><thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Service</th><th>Product</th><th>Status</th><th>Date</th></tr></thead><tbody>' + rows + '</tbody></table>';
+      } catch (err) {
+        area.innerHTML = '<div class="empty">Failed to load requests.</div>';
+      }
+    }
+
+    async function showCustomer(name) {
+      const box = document.getElementById('customerHistory');
+      try {
+        const res = await fetch('/api/requests');
+        const data = await res.json();
+        const items = data.filter(x => x.name === name);
+        if (!items.length) {
+          box.className = 'empty';
+          box.innerHTML = 'No history found.';
+          return;
+        }
+        box.className = 'box';
+        let html = '<strong>' + esc(name) + '</strong><br><br>';
+        for (let i = 0; i < items.length; i++) {
+          const t = items[i];
+          html += 'Ticket ' + esc(t.id || '-') + ' | ' + esc(t.serviceType || '-') + ' | ' + esc(t.product || '-') + ' | ' + esc(t.status || 'pending') + ' | ' + esc(t.createdAt || '-') + '<br>';
+        }
+        box.innerHTML = html;
+      } catch (e) {
+        box.className = 'empty';
+        box.innerHTML = 'Unable to load customer history.';
+      }
+    }
+
+    async function showTicket(id) {
+      try {
+        const res = await fetch('/api/requests/' + encodeURIComponent(id));
+        if (!res.ok) return;
+        const data = await res.json();
+        const t = data.request;
+        const html = [
+          '<!doctype html><html lang="en"><head><meta charset="utf-8">',
+          '<meta name="viewport" content="width=device-width,initial-scale=1">',
+          '<title>Ticket ' + esc(t.id) + '<\/title>',
+          '<style>body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#122033}',
+          '.wrap{max-width:900px;margin:24px auto;padding:0 16px}',
+          '.card{background:#fff;border:1px solid #d9e3ef;border-radius:18px;padding:24px}',
+          'h1{margin:0 0 10px}',
+          '.sub{color:#607089;margin:0 0 18px}',
+          '.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}',
+          '.item{padding:14px;border:1px solid #d9e3ef;border-radius:14px}',
+          '.item strong{display:block;color:#29415f;margin-bottom:4px}',
+          '.wide{grid-column:1/-1}',
+          '<\/style><\/head><body>',
+          '<div class="wrap"><div class="card">',
+          '<h1>Ticket Details<\/h1>',
+          '<p class="sub">Full details for this request.<\/p>',
+          '<div class="grid">',
+          '<div class="item"><strong>Ticket ID<\/strong>' + esc(t.id) + '<\/div>',
+          '<div class="item"><strong>Status<\/strong>' + esc(t.status || 'pending') + '<\/div>',
+          '<div class="item"><strong>Customer<\/strong>' + esc(t.name) + '<\/div>',
+          '<div class="item"><strong>Email<\/strong>' + esc(t.email) + '<\/div>',
+          '<div class="item"><strong>Phone<\/strong>' + esc(t.phone) + '<\/div>',
+          '<div class="item"><strong>OEM<\/strong>' + esc(t.oem) + '<\/div>',
+          '<div class="item"><strong>Service Type<\/strong>' + esc(t.serviceType) + '<\/div>',
+          '<div class="item"><strong>Product<\/strong>' + esc(t.product) + '<\/div>',
+          '<div class="item wide"><strong>Description<\/strong>' + esc(t.description) + '<\/div>',
+          '<div class="item wide"><strong>Additional Info<\/strong>' + esc(t.additionalInfo) + '<\/div>',
+          '<\/div><\/div><\/div><\/body><\/html>'
+        ].join('');
+        const w = window.open('', '_blank');
+        if (!w) return;
+        w.document.open();
+        w.document.write(html);
+        w.document.close();
+        w.focus();
+      } catch (e) {}
+    }
+
+    function clearAllData() {
+      if (confirm('Clear all saved requests from localStorage?')) {
+        localStorage.removeItem('fastech_requests');
+        document.getElementById('customerHistory').className = 'empty';
+        document.getElementById('customerHistory').innerHTML = 'Click a customer name to see previous requests.';
+        loadRequests();
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('fastech_team_session');
+      localStorage.removeItem('fastech_requests');
+      window.location.href = '/login.html';
+    }
+
+    window.addEventListener('load', loadRequests);
+  </script>
+</body>
+</html>

@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FASCAL — Track Request</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f4f7fb;
+      --surface: #ffffff;
+      --surface-2: #f9fbff;
+      --line: #dbe5f0;
+      --line-soft: #eef3f9;
+      --text: #0f172a;
+      --muted: #64748b;
+      --faint: #94a3b8;
+      --primary: #0ea5e9;
+      --primary-dark: #0284c7;
+      --primary-soft: #e0f2fe;
+      --success: #166534;
+      --success-soft: #dcfce7;
+      --warning: #92400e;
+      --warning-soft: #fef3c7;
+      --danger: #b91c1c;
+      --danger-soft: #fee2e2;
+      --review: #1d4ed8;
+      --review-soft: #dbeafe;
+      --sidebar-bg: #0b1220;
+      --shadow-sm: 0 1px 3px rgba(15,23,42,.06);
+      --shadow-md: 0 4px 16px rgba(15,23,42,.07);
+      --r-sm: 10px;
+      --r-md: 14px;
+      --r-lg: 18px;
+      --r-xl: 22px;
+    }
+    html { font-family: "Inter", sans-serif; -webkit-font-smoothing: antialiased; }
+    body { background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; font: inherit; }
+
+    .app { display: grid; grid-template-columns: 252px 1fr; min-height: 100vh; }
+    .sidebar {
+      background: linear-gradient(180deg, #0b1220 0%, #0d1626 100%);
+      color: #e2e8f0;
+      display: flex; flex-direction: column;
+      position: sticky; top: 0; height: 100vh;
+      border-right: 1px solid rgba(255,255,255,.06);
+    }
+    .sidebar-inner { display: flex; flex-direction: column; flex: 1; padding: 0 0 16px; }
+    .brand { display: flex; align-items: center; gap: 12px; padding: 20px 18px 16px; border-bottom: 1px solid rgba(255,255,255,.06); }
+    .brand-icon { width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(14,165,233,.28); flex-shrink: 0; }
+    .brand-icon svg { width: 18px; height: 18px; color: #fff; }
+    .brand-name { font-size: 17px; font-weight: 800; letter-spacing: -.03em; line-height: 1; }
+    .brand-sub { font-size: 10.5px; opacity: .6; text-transform: uppercase; letter-spacing: .1em; margin-top: 3px; font-weight: 700; }
+    .user-panel { margin: 14px 12px 0; background: rgba(255,255,255,.055); border: 1px solid rgba(255,255,255,.07); border-radius: var(--r-md); padding: 12px 14px; display: flex; align-items: center; gap: 10px; }
+    .user-avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #38bdf8, #0284c7); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; color: #fff; flex-shrink: 0; }
+    .user-meta small { display: block; font-size: 10px; opacity: .6; text-transform: uppercase; letter-spacing: .09em; margin-bottom: 2px; }
+    .user-meta strong { font-size: 13.5px; font-weight: 700; }
+    .nav-section { padding: 18px 12px 0; }
+    .nav-label { font-size: 10px; text-transform: uppercase; letter-spacing: .12em; opacity: .45; font-weight: 700; padding: 0 8px 6px; }
+    .nav-group { display: grid; gap: 2px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; min-height: 42px; padding: 9px 12px; border-radius: var(--r-sm); color: #c8d8ec; border: 1px solid transparent; background: transparent; font-size: 13.5px; font-weight: 600; transition: background .15s; width: 100%; text-align: left; }
+    .nav-item svg { width: 15px; height: 15px; opacity: .85; flex-shrink: 0; }
+    .nav-item:hover, .nav-item.active { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.08); color: #fff; }
+    .sidebar-footer { margin: auto 12px 0; padding-top: 16px; }
+    .btn-logout { width: 100%; min-height: 40px; background: rgba(239,68,68,.14); border: 1px solid rgba(239,68,68,.25); color: #fca5a5; border-radius: var(--r-sm); font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background .15s; }
+    .btn-logout:hover { background: rgba(239,68,68,.22); }
+    .btn-logout svg { width: 14px; height: 14px; }
+
+    .main-wrap { display: flex; flex-direction: column; min-width: 0; }
+    .navbar { position: sticky; top: 0; z-index: 30; height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 24px; background: rgba(244,247,251,.9); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(219,229,240,.9); }
+    .navbar-left .page-title { font-size: 17px; font-weight: 800; letter-spacing: -.025em; }
+    .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); }
+    .breadcrumb span { opacity: .5; }
+    .navbar-right { display: flex; align-items: center; gap: 10px; }
+    .icon-btn { width: 38px; height: 38px; border-radius: var(--r-sm); border: 1px solid var(--line); background: var(--surface); display: flex; align-items: center; justify-content: center; color: var(--muted); }
+    .icon-btn svg { width: 16px; height: 16px; }
+
+    .content { padding: 24px; display: flex; flex-direction: column; gap: 18px; }
+
+    .search-panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-xl); box-shadow: var(--shadow-md); padding: 24px; }
+    .search-panel h2 { font-size: 18px; font-weight: 800; letter-spacing: -.03em; margin-bottom: 4px; }
+    .search-panel p { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+    .search-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end; }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: #475569; }
+    .input-wrap { position: relative; }
+    .input-wrap svg.icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--muted); pointer-events: none; }
+    .input-wrap input { width: 100%; min-height: 44px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface); padding: 10px 12px 10px 38px; font: inherit; font-size: 14px; color: var(--text); outline: none; transition: border-color .15s, box-shadow .15s; }
+    .input-wrap input:focus { border-color: #7dd3fc; box-shadow: 0 0 0 3px rgba(14,165,233,.1); }
+    .btn { min-height: 44px; border-radius: 12px; padding: 0 18px; font: inherit; font-size: 14px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; cursor: pointer; white-space: nowrap; transition: box-shadow .15s, opacity .15s; }
+    .btn svg { width: 15px; height: 15px; }
+    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; box-shadow: 0 6px 18px rgba(14,165,233,.22); }
+    .btn-primary:hover { box-shadow: 0 10px 24px rgba(14,165,233,.3); }
+    .btn-ghost { background: var(--surface); border: 1.5px solid var(--line); color: var(--text); box-shadow: var(--shadow-sm); }
+
+    .alert { border-radius: 12px; padding: 12px 16px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .alert svg { width: 15px; height: 15px; flex-shrink: 0; }
+    .alert-error { background: var(--danger-soft); color: var(--danger); }
+
+    .result-panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-xl); box-shadow: var(--shadow-md); overflow: hidden; }
+    .result-header { background: linear-gradient(135deg, #0b1220, #0f2040); padding: 20px 24px; }
+    .result-header-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .ticket-id { font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -.03em; }
+    .ticket-date { font-size: 12px; color: rgba(255,255,255,.55); margin-top: 4px; }
+    .pill { display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 999px; font-size: 12.5px; font-weight: 800; white-space: nowrap; }
+    .pill-pending { background: var(--warning-soft); color: var(--warning); }
+    .pill-review, .pill-forwarded { background: var(--review-soft); color: var(--review); }
+    .pill-approved, .pill-resolved, .pill-closed { background: var(--success-soft); color: var(--success); }
+    .pill-rejected { background: var(--danger-soft); color: var(--danger); }
+
+    .timeline-wrap { padding: 20px 24px; border-bottom: 1px solid var(--line-soft); }
+    .timeline-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); margin-bottom: 14px; }
+    .timeline { display: flex; gap: 0; position: relative; }
+    .timeline::before { content: ""; position: absolute; top: 14px; left: 14px; right: 14px; height: 2px; background: var(--line); z-index: 0; }
+    .tl-step { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; position: relative; z-index: 1; }
+    .tl-dot { width: 28px; height: 28px; border-radius: 50%; border: 3px solid var(--line); background: var(--surface); display: flex; align-items: center; justify-content: center; transition: border-color .3s, background .3s; }
+    .tl-dot svg { width: 12px; height: 12px; color: var(--faint); }
+    .tl-dot.done { border-color: #22c55e; background: #22c55e; }
+    .tl-dot.done svg { color: #fff; }
+    .tl-dot.active { border-color: var(--primary); background: var(--primary); }
+    .tl-dot.active svg { color: #fff; }
+    .tl-label { font-size: 11px; font-weight: 700; color: var(--faint); text-align: center; }
+    .tl-label.done { color: #16a34a; }
+    .tl-label.active { color: var(--primary-dark); }
+
+    .detail-body { padding: 20px 24px; display: grid; gap: 16px; }
+    .detail-section { background: var(--surface-2); border: 1px solid var(--line-soft); border-radius: var(--r-lg); padding: 14px 16px; }
+    .section-title { font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--line-soft); }
+    .detail-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 16px; }
+    .d-label { font-size: 11px; color: var(--faint); font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 3px; }
+    .d-value { font-size: 13px; font-weight: 600; color: var(--text); }
+    .d-full { grid-column: 1 / -1; }
+
+    .feedback-card { margin: 0 24px 20px; background: var(--primary-soft); border: 1.5px solid #bae6fd; border-radius: var(--r-lg); padding: 14px 16px; }
+    .feedback-card.rejected { background: var(--danger-soft); border-color: #fca5a5; }
+    .feedback-title { font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .09em; color: var(--primary-dark); margin-bottom: 6px; }
+    .feedback-card.rejected .feedback-title { color: var(--danger); }
+    .feedback-text { font-size: 13.5px; font-weight: 600; color: var(--text); }
+
+    .my-requests { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-xl); box-shadow: var(--shadow-md); overflow: hidden; }
+    .panel-head { padding: 14px 18px; border-bottom: 1px solid var(--line-soft); background: var(--surface-2); display: flex; align-items: center; justify-content: space-between; }
+    .panel-head h2 { font-size: 14.5px; font-weight: 800; letter-spacing: -.02em; }
+    .panel-head p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .req-list { display: flex; flex-direction: column; }
+    .req-item { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--line-soft); cursor: pointer; transition: background .1s; }
+    .req-item:last-child { border-bottom: none; }
+    .req-item:hover { background: #fbfdff; }
+    .req-id { font-weight: 800; color: var(--primary-dark); font-size: 13px; }
+    .req-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .req-date { font-size: 11.5px; color: var(--faint); text-align: right; margin-top: 4px; }
+    .empty-state { padding: 36px 18px; text-align: center; color: var(--muted); font-size: 13px; }
+
+    @media (max-width: 1100px) { .detail-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 900px) { .app { grid-template-columns: 1fr; } .sidebar { position: static; height: auto; } .navbar { position: static; } }
+    @media (max-width: 600px) { .content { padding: 14px; } .search-row { grid-template-columns: 1fr; } .detail-grid { grid-template-columns: 1fr; } .tl-label { font-size: 9.5px; } }
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19h16M6 15h12M8 11h8M10 7h4"/></svg>
+        </div>
+        <div>
+          <div class="brand-name">FASCAL</div>
+          <div class="brand-sub">Customer Portal</div>
+        </div>
+      </div>
+      <div class="user-panel">
+        <div class="user-avatar" id="sidebarAvatar">U</div>
+        <div class="user-meta">
+          <small>Signed in as</small>
+          <strong id="sidebarName">Customer</strong>
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Navigation</div>
+        <div class="nav-group">
+          <a class="nav-item" href="customer.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Submit Request
+          </a>
+          <a class="nav-item active" href="track.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Track Request
+          </a>
+          <a class="nav-item" href="login.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            Login
+          </a>
+        </div>
+      </div>
+      <div class="sidebar-footer">
+        <button class="btn-logout" onclick="logout()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Logout
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-wrap">
+    <nav class="navbar">
+      <div class="navbar-left">
+        <div class="page-title">Track Your Request</div>
+        <div class="breadcrumb"><a href="customer.html">Home</a><span>›</span><span>Track</span></div>
+      </div>
+      <div class="navbar-right">
+        <a class="icon-btn" href="customer.html" title="Submit new request">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </a>
+      </div>
+    </nav>
+
+    <div class="content">
+      <div class="search-panel">
+        <h2>Track a Request</h2>
+        <p>Enter your Ticket ID (e.g. <strong>TMI-1748012345678</strong>) to view its current status and details.</p>
+        <div class="search-row">
+          <div class="field">
+            <label for="ticketInput">Ticket ID</label>
+            <div class="input-wrap">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input id="ticketInput" type="text" placeholder="TMI-XXXXXXXXXXXXXXX" />
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="trackRequest()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Track
+          </button>
+        </div>
+        <div id="searchAlert" style="margin-top:12px;display:none;"></div>
+      </div>
+
+      <div id="resultWrap" style="display:none;"></div>
+
+      <div class="my-requests" id="myRequestsPanel" style="display:none;">
+        <div class="panel-head">
+          <div>
+            <h2>My Requests</h2>
+            <p>All requests linked to your email address.</p>
+          </div>
+          <button class="btn btn-ghost" style="min-height:36px;padding:0 12px;font-size:12px;" onclick="loadMyRequests()">
+            Refresh
+          </button>
+        </div>
+        <div class="req-list" id="myRequestsList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = window.location.origin;
+
+  function setupUser() {
+    let u = null;
+    try { u = JSON.parse(localStorage.getItem("cxUser") || "null"); } catch {}
+    const name = u?.username || "Customer";
+    const initial = name.charAt(0).toUpperCase();
+    const sn = document.getElementById("sidebarName"); if (sn) sn.textContent = name;
+    const sa = document.getElementById("sidebarAvatar"); if (sa) sa.textContent = initial;
+    if (u?.email) loadMyRequests(u.email);
+  }
+
+  const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  function fmtStatus(s) { const v = String(s||"pending").toLowerCase(); return v.charAt(0).toUpperCase()+v.slice(1); }
+  function pillClass(s) {
+    const v = String(s||"").toLowerCase();
+    if (["approved","resolved","closed"].includes(v)) return "pill pill-approved";
+    if (["review","forwarded"].includes(v)) return "pill pill-review";
+    if (v==="rejected") return "pill pill-rejected";
+    return "pill pill-pending";
+  }
+
+  const STEPS = [
+    { key: "pending", label: "Submitted" },
+    { key: "review", label: "In Review" },
+    { key: "forwarded", label: "Forwarded" },
+    { key: "approved", label: "Approved" },
+    { key: "closed", label: "Closed" }
+  ];
+  const STATUS_ORDER = ["pending","review","forwarded","approved","closed"];
+
+  function buildTimeline(status) {
+    const s = String(status||"pending").toLowerCase();
+    const idx = STATUS_ORDER.indexOf(s);
+    return STEPS.map((step, i) => {
+      let cls = "";
+      if (i < idx) cls = "done";
+      else if (STATUS_ORDER[i] === s) cls = "active";
+      return `
+        <div class="tl-step">
+          <div class="tl-dot ${cls}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="tl-label ${cls}">${step.label}</div>
+        </div>`;
+    }).join("");
+  }
+
+  async function trackRequest() {
+    const id = document.getElementById("ticketInput").value.trim();
+    const alertEl = document.getElementById("searchAlert");
+    const resultWrap = document.getElementById("resultWrap");
+
+    if (!id) {
+      alertEl.innerHTML = `<div class="alert alert-error">Please enter a Ticket ID.</div>`;
+      alertEl.style.display = "block";
+      return;
+    }
+    alertEl.style.display = "none";
+    resultWrap.style.display = "none";
+
+    try {
+      const res = await fetch(`${API}/api/requests/${encodeURIComponent(id)}`);
+      const data = await res.json();
+      if (!res.ok || !data.request) throw new Error(data.message || "Ticket not found.");
+      renderResult(data.request);
+    } catch (e) {
+      alertEl.innerHTML = `<div class="alert alert-error">${esc(e.message)}</div>`;
+      alertEl.style.display = "block";
+    }
+  }
+
+  function renderResult(r) {
+    const rw = document.getElementById("resultWrap");
+    const s = String(r.status||"").toLowerCase();
+    const feedbackHtml = r.customerFeedback ? `
+      <div class="feedback-card ${s==="rejected"?"rejected":""}">
+        <div class="feedback-title">Message from FASCAL Team</div>
+        <div class="feedback-text">${esc(r.customerFeedback)}</div>
+      </div>` : "";
+
+    rw.innerHTML = `
+      <div class="result-panel">
+        <div class="result-header">
+          <div class="result-header-top">
+            <div>
+              <div class="ticket-id">${esc(r.id||"-")}</div>
+              <div class="ticket-date">Submitted: ${esc(r.createdAt||"-")}</div>
+            </div>
+            <span class="${pillClass(r.status)}">${esc(fmtStatus(r.status))}</span>
+          </div>
+        </div>
+
+        <div class="timeline-wrap">
+          <div class="timeline-title">Request Progress</div>
+          <div class="timeline">${buildTimeline(r.status)}</div>
+        </div>
+
+        ${feedbackHtml}
+
+        <div class="detail-body">
+          <div class="detail-section">
+            <div class="section-title">Product & Service</div>
+            <div class="detail-grid">
+              <div><div class="d-label">OEM</div><div class="d-value">${esc(r.oem||"-")}</div></div>
+              <div><div class="d-label">Service Type</div><div class="d-value">${esc(r.serviceType||"-")}</div></div>
+              <div><div class="d-label">Product Model</div><div class="d-value">${esc(r.product||"-")}</div></div>
+              <div><div class="d-label">Serial Number</div><div class="d-value">${esc(r.serialNumber||"-")}</div></div>
+              <div><div class="d-label">PO Number</div><div class="d-value">${esc(r.poNumber||"-")}</div></div>
+              <div><div class="d-label">PO Date</div><div class="d-value">${esc(r.poDate||"-")}</div></div>
+              <div class="d-full"><div class="d-label">Description</div><div class="d-value">${esc(r.description||"-")}</div></div>
+            </div>
+          </div>
+          <div class="detail-section">
+            <div class="section-title">Sender Information</div>
+            <div class="detail-grid">
+              <div><div class="d-label">Name</div><div class="d-value">${esc(r.name||"-")}</div></div>
+              <div><div class="d-label">Company</div><div class="d-value">${esc(r.company||"-")}</div></div>
+              <div><div class="d-label">Email</div><div class="d-value">${esc(r.email||"-")}</div></div>
+              <div><div class="d-label">Phone</div><div class="d-value">${esc(r.phone||"-")}</div></div>
+              <div><div class="d-label">Designation</div><div class="d-value">${esc(r.designation||"-")}</div></div>
+              <div><div class="d-label">Department</div><div class="d-value">${esc(r.department||"-")}</div></div>
+            </div>
+          </div>
+          <div class="detail-section">
+            <div class="section-title">Assignment</div>
+            <div class="detail-grid">
+              <div><div class="d-label">Forward To</div><div class="d-value">${esc(r.forwardTo||"-")}</div></div>
+              <div><div class="d-label">Operations Team</div><div class="d-value">${esc(r.operationsTeam||"-")}</div></div>
+              <div><div class="d-label">Service Team</div><div class="d-value">${esc(r.serviceTeam||"-")}</div></div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    rw.style.display = "block";
+    rw.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  async function loadMyRequests(email) {
+    const panel = document.getElementById("myRequestsPanel");
+    const list = document.getElementById("myRequestsList");
+    if (!email) return;
+    panel.style.display = "block";
+    list.innerHTML = `<div class="empty-state">Loading your requests…</div>`;
+    try {
+      const res = await fetch(`${API}/api/requests?email=${encodeURIComponent(email)}`);
+      const data = await res.json();
+      const rows = Array.isArray(data) ? data.filter(r => r.email === email) : [];
+      if (!rows.length) {
+        list.innerHTML = `<div class="empty-state">No requests found for your account.</div>`;
+        return;
+      }
+      list.innerHTML = rows.map(r => `
+        <div class="req-item" onclick="loadTicket('${String(r.id||"").replace(/'/g,"\\'")}')">
+          <div>
+            <div class="req-id">${esc(r.id||"-")}</div>
+            <div class="req-meta">${esc(r.product||r.oem||"-")} · ${esc(r.serviceType||"-")}</div>
+          </div>
+          <div style="text-align:right;">
+            <span class="${pillClass(r.status)}">${esc(fmtStatus(r.status))}</span>
+            <div class="req-date">${esc(r.createdAt||"-")}</div>
+          </div>
+        </div>`).join("");
+    } catch (e) {
+      list.innerHTML = `<div class="empty-state">Could not load requests.</div>`;
+    }
+  }
+
+  async function loadTicket(id) {
+    document.getElementById("ticketInput").value = id;
+    await trackRequest();
+  }
+
+  function logout() { localStorage.removeItem("cxUser"); window.location.href = "login.html"; }
+
+  document.getElementById("ticketInput")?.addEventListener("keydown", e => { if (e.key === "Enter") trackRequest(); });
+
+  const params = new URLSearchParams(window.location.search);
+  const preId = params.get("id");
+
+  document.addEventListener("DOMContentLoaded", () => {
+    setupUser();
+    if (preId) {
+      document.getElementById("ticketInput").value = preId;
+      trackRequest();
+    }
+  });
+</script>
+</body>
+</html>

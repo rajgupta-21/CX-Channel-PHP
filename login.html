@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FASCAL — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#08111e;--line:rgba(255,255,255,.10);--text:#f8fafc;--muted:#94a3b8;--blue:#1fb6ff;--blue2:#1992d4;--shadow:0 24px 70px rgba(0,0,0,.42)}
+    body{min-height:100vh;font-family:Inter,sans-serif;color:var(--text);background:radial-gradient(circle at top left, rgba(31,182,255,.12), transparent 30%),linear-gradient(180deg,#08111e,#0a1530 55%,#08111e);display:grid;place-items:center;padding:20px}
+    .card{width:min(440px,100%);background:rgba(15,23,42,.92);border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);padding:30px}
+    .brand{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+    .logo{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,var(--blue),var(--blue2));display:grid;place-items:center;font-size:24px;box-shadow:0 12px 30px rgba(31,182,255,.25)}
+    .brand h1{font-size:20px;font-weight:800;line-height:1}
+    .brand p{font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:var(--muted);margin-top:4px}
+    h2{font-size:28px;font-weight:800;letter-spacing:-.04em;margin-bottom:6px}
+    .sub{color:var(--muted);margin-bottom:20px;line-height:1.6}
+    .field{margin-bottom:14px}
+    label{display:block;font-size:12px;font-weight:800;letter-spacing:.08em;color:#cbd5e1;margin-bottom:8px;text-transform:uppercase}
+    input{width:100%;height:50px;border-radius:14px;border:1px solid rgba(255,255,255,.10);background:#0b1220;color:#fff;padding:0 14px;outline:none;font:inherit}
+    input:focus{border-color:rgba(31,182,255,.7);box-shadow:0 0 0 4px rgba(31,182,255,.12)}
+    .password-wrap{position:relative}.password-wrap input{padding-right:48px}
+    .toggle{position:absolute;top:50%;right:12px;transform:translateY(-50%);border:none;background:transparent;color:#94a3b8;cursor:pointer;font-size:16px}
+    .alert{display:none;margin-bottom:14px;padding:12px 14px;border-radius:14px;font-weight:700;font-size:14px}
+    .alert.show{display:block}.alert.error{background:rgba(239,68,68,.14);color:#fecaca;border:1px solid rgba(239,68,68,.25)}.alert.success{background:rgba(34,197,94,.14);color:#bbf7d0;border:1px solid rgba(34,197,94,.25)}
+    .btn{width:100%;height:52px;border:none;border-radius:16px;cursor:pointer;font:inherit;font-size:16px;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--blue),var(--blue2));box-shadow:0 10px 28px rgba(31,182,255,.28);margin-top:6px}
+    .btn:disabled{opacity:.7;cursor:not-allowed}
+    .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;display:inline-block;vertical-align:-2px;margin-right:8px;animation:spin .7s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .links{margin-top:18px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+    .links a{color:var(--blue);text-decoration:none;font-weight:700}.links a:hover{text-decoration:underline}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">
+      <div class="logo">🛰️</div>
+      <div><h1>FASCAL</h1><p>Service Portal</p></div>
+    </div>
+
+    <h2>Welcome back</h2>
+    <p class="sub">Sign in to your team account to continue.</p>
+
+    <div id="alertBox" class="alert"></div>
+
+    <form id="loginForm">
+      <div class="field"><label for="username">Username</label><input id="username" type="text" placeholder="Enter your username" required /></div>
+      <div class="field"><label for="password">Password</label><div class="password-wrap"><input id="password" type="password" placeholder="Enter your password" required /><button class="toggle" type="button" id="toggleBtn">👁</button></div></div>
+      <button class="btn" type="submit" id="loginBtn">Sign In</button>
+    </form>
+
+    <div class="links">
+      <span>Raise a request? <a href="customer.html">Open customer portal</a></span>
+      <a href="team-signup.html">Team signup</a>
+    </div>
+  </div>
+
+<script>
+  const API = window.location.origin;
+  const alertBox = document.getElementById('alertBox');
+  const form = document.getElementById('loginForm');
+  const toggleBtn = document.getElementById('toggleBtn');
+  const loginBtn = document.getElementById('loginBtn');
+
+  function setLoading(loading){
+    loginBtn.disabled = loading;
+    loginBtn.innerHTML = loading
+      ? '<span class="spinner"></span>Signing In…'
+      : 'Sign In';
+  }
+
+  function showAlert(msg, type='error'){
+    alertBox.className=`alert show ${type}`;
+    alertBox.textContent=msg;
+  }
+
+  function hideAlert(){
+    alertBox.className='alert';
+    alertBox.textContent='';
+  }
+
+  toggleBtn.addEventListener('click',()=>{
+    const input=document.getElementById('password');
+    input.type=input.type==='password'?'text':'password';
+  });
+
+  form.addEventListener('submit',async(e)=>{
+    e.preventDefault();
+    hideAlert();
+
+    const username=document.getElementById('username').value.trim();
+    const password=document.getElementById('password').value;
+
+    if(!username||!password){
+      showAlert('Username and password are required.');
+      return;
+    }
+
+    try{
+      setLoading(true);
+      const res=await fetch(`${API}/api/auth/login`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({username,password})
+      });
+
+      const data=await res.json();
+      if(!res.ok){
+        setLoading(false);
+        showAlert(data.message||'Login failed.');
+        return;
+      }
+
+      localStorage.setItem('cxUser',JSON.stringify(data));
+      window.location.href='index.html';
+    }catch(err){
+      setLoading(false);
+      showAlert('Network error. Please try again.');
+    }
+  });
+</script>
+</body>
+</html>

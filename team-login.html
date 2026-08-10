@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CX Channel – Team Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:Inter,sans-serif;background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f2940 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+    .wrap{width:100%;max-width:440px;}
+    .logo-row{text-align:center;margin-bottom:28px;}
+    .logo-icon{width:60px;height:60px;background:linear-gradient(135deg,#0ea5e9,#0369a1);border-radius:18px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 8px 24px rgba(14,165,233,.4);}
+    .logo-name{color:#fff;font-size:26px;font-weight:800;}
+    .logo-sub{color:#94a3b8;font-size:13px;margin-top:4px;}
+    .card{background:#1e293b;border:1px solid #334155;border-radius:22px;padding:36px 32px;box-shadow:0 20px 60px rgba(0,0,0,.4);}
+    .card-title{color:#f1f5f9;font-size:22px;font-weight:800;margin-bottom:6px;}
+    .card-sub{color:#64748b;font-size:14px;margin-bottom:28px;line-height:1.5;}
+    label{font-size:13px;font-weight:700;color:#94a3b8;display:block;margin-bottom:7px;}
+    .input-wrap{position:relative;margin-bottom:16px;}
+    input{width:100%;background:#0f172a;border:1.5px solid #334155;color:#f1f5f9;border-radius:12px;padding:13px 14px;font:inherit;font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s;}
+    input:focus{border-color:#0ea5e9;box-shadow:0 0 0 3px rgba(14,165,233,.15);}
+    input::placeholder{color:#475569;}
+    .eye-btn{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#475569;font-size:18px;padding:4px;transition:color .2s;line-height:1;}
+    .eye-btn:hover{color:#94a3b8;}
+    .has-eye input{padding-right:44px;}
+    .btn-submit{width:100%;background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#fff;border:none;border-radius:13px;padding:14px;font:inherit;font-weight:800;font-size:15px;cursor:pointer;margin-top:6px;transition:.2s;box-shadow:0 4px 14px rgba(14,165,233,.35);}
+    .btn-submit:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(14,165,233,.45);}
+    .btn-submit:disabled{opacity:.7;cursor:not-allowed;transform:none;}
+    .spinner{width:15px;height:15px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;display:inline-block;vertical-align:-2px;margin-right:8px;animation:spin .7s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .alert-error{display:none;padding:12px 14px;border-radius:11px;background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.3);color:#fca5a5;font-size:13px;font-weight:600;margin-bottom:16px;}
+    .alert-error.show{display:flex;align-items:center;gap:8px;}
+    .divider{border:none;border-top:1px solid #334155;margin:24px 0;}
+    .links{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+    .link-text{color:#64748b;font-size:13px;}
+    .link-btn{color:#38bdf8;font-size:13px;font-weight:700;text-decoration:none;transition:color .2s;}
+    .link-btn:hover{color:#7dd3fc;}
+    .team-badge{text-align:center;margin-top:20px;color:#475569;font-size:12px;}
+    .team-badge a{color:#38bdf8;text-decoration:none;font-weight:700;}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo-row">
+    <div class="logo-icon">📡</div>
+    <div class="logo-name">CX Channel</div>
+    <div class="logo-sub">Team Dashboard Access</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Welcome back</div>
+    <div class="card-sub">Sign in to access the approval dashboard and manage requests.</div>
+    <div id="errBox" class="alert-error"><span>⚠</span><span id="errMsg">Invalid username or password.</span></div>
+    <label>Username</label>
+    <div class="input-wrap">
+      <input id="uUser" type="text" placeholder="Enter your username" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <label>Password</label>
+    <div class="input-wrap has-eye">
+      <input id="uPass" type="password" placeholder="Enter your password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+      <button class="eye-btn" onclick="togglePass('uPass','eye1')" aria-label="Toggle password visibility"><span id="eye1">👁</span></button>
+    </div>
+    <button class="btn-submit" id="loginBtn" onclick="doLogin()">Sign In →</button>
+    <hr class="divider"/>
+    <div class="links">
+      <span class="link-text">New team member?</span>
+      <a class="link-btn" href="team-signup.html">Create Account →</a>
+    </div>
+  </div>
+  <div class="team-badge">Customer? <a href="customer.html">Use the Customer Portal →</a></div>
+</div>
+<script>
+  const API = window.location.origin;
+  if(localStorage.getItem('cxUser')) window.location.href="index.html";
+  function togglePass(inputId,iconId){
+    const inp=document.getElementById(inputId),ico=document.getElementById(iconId);
+    inp.type=inp.type==="password"?"text":"password";
+    ico.textContent=inp.type==="password"?"👁":"🙈";
+  }
+  async function doLogin(){
+    const errBox=document.getElementById("errBox"),errMsg=document.getElementById("errMsg");
+    errBox.classList.remove("show");
+    const username=document.getElementById("uUser").value.trim();
+    const password=document.getElementById("uPass").value.trim();
+    if(!username||!password){errMsg.textContent="Please enter your username and password.";errBox.classList.add("show");return;}
+    const loginBtn=document.getElementById("loginBtn");
+    loginBtn.disabled=true;
+    loginBtn.innerHTML='<span class="spinner"></span>Signing In…';
+    try{
+      const res=await fetch(`${API}/api/auth/login`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username,password})});
+      const data=await res.json();
+      if(!res.ok){loginBtn.disabled=false;loginBtn.textContent="Sign In →";errMsg.textContent=data.message||"Invalid username or password.";errBox.classList.add("show");return;}
+      localStorage.setItem('cxUser',JSON.stringify(data));
+      window.location.href="index.html";
+    }catch{loginBtn.disabled=false;loginBtn.textContent="Sign In →";errMsg.textContent="Could not connect to server. Please try again.";errBox.classList.add("show");}
+  }
+</script>
+</body>
+</html>
