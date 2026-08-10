@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/db.php';
 
+if (!is_dir(__DIR__ . '/uploads')) {
+    mkdir(__DIR__ . '/uploads', 0755, true);
+}
+
 function escape_html($value): string
 {
     return htmlspecialchars((string) ($value ?? ''), ENT_QUOTES, 'UTF-8');
