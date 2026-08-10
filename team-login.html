@@ -72,7 +72,7 @@
   <div class="team-badge">Customer? <a href="customer.html">Use the Customer Portal →</a></div>
 </div>
 <script>
-  const API = window.location.origin;
+  const API = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '');
   if(localStorage.getItem('cxUser')) window.location.href="index.html";
   function togglePass(inputId,iconId){
     const inp=document.getElementById(inputId),ico=document.getElementById(iconId);

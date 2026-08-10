@@ -59,7 +59,7 @@
   </div>
 
 <script>
-  const API = window.location.origin;
+  const API = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '');
   const alertBox = document.getElementById('alertBox');
   const form = document.getElementById('loginForm');
   const toggleBtn = document.getElementById('toggleBtn');

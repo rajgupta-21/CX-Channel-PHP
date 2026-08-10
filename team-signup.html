@@ -468,7 +468,7 @@
   </div>
 
   <script>
-    const API = window.location.origin;
+    const API = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '');
 
     const form = document.getElementById("signupForm");
     const errorBox = document.getElementById("errorBox");

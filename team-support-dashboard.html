@@ -946,6 +946,7 @@
     <div class="toast" id="toast"></div>
 
     <script>
+      const API = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '');
       (function requireTeamLogin() {
         let u = null;
         try {
@@ -1007,7 +1008,7 @@
           user = JSON.parse(localStorage.getItem("cxUser") || "null");
         } catch (e) {}
         if (!user || !user.token || user.role !== "team") {
-          window.location.href = "/login.html";
+          window.location.href = API + "/login.html";
           return null;
         }
         const name = user.username || user.name || "Team";
@@ -1025,7 +1026,7 @@
         localStorage.removeItem("cxUser");
         localStorage.removeItem("fastech_team_session");
         localStorage.removeItem("fastech_requests");
-        window.location.href = "/login.html";
+        window.location.href = API + "/login.html";
       }
 
       function showToast(msg, kind) {
@@ -1043,7 +1044,7 @@
           params.set("status", statusFilter);
         }
         const qs = params.toString();
-        const url = "/api/support/export/csv" + (qs ? "?" + qs : "");
+        const url = API + "/api/support/export/csv" + (qs ? "?" + qs : "");
         window.open(url, "_blank");
       }
 
@@ -1052,7 +1053,7 @@
         tbody.innerHTML =
           '<tr><td colspan="8" class="td-empty">Loading support tickets…</td></tr>';
         try {
-          const res = await fetch("/api/support");
+          const res = await fetch(API + "/api/support");
           if (!res.ok) throw new Error("Failed to fetch");
           allSupport = await res.json();
           updateStats();
@@ -1450,7 +1451,7 @@
 
         try {
           const res = await fetch(
-            "/api/support/" + encodeURIComponent(currentDetail.id),
+            API + "/api/support/" + encodeURIComponent(currentDetail.id),
             {
               method: "PUT",
               body: formData,
@@ -1479,7 +1480,7 @@
         setBtnLoading("ticketClosedBtn", true, "Close Ticket", "Closing…");
         try {
           const res = await fetch(
-            "/api/support/" + encodeURIComponent(currentDetail.id),
+            API + "/api/support/" + encodeURIComponent(currentDetail.id),
             {
               method: "PUT",
               headers: { "Content-Type": "application/json" },

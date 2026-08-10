@@ -794,7 +794,7 @@
     </div>
 
     <script>
-      const API = window.location.origin;
+      const API = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '');
       const OEM_MODELS = {
         Narda: [
           "SRM-3006",

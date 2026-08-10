@@ -1116,7 +1116,7 @@
         }
       })();
 
-      const API = window.location.origin;
+      const API = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '');
       let allRequests = [],
         filtered = [],
         currentRequest = null,
@@ -1294,9 +1294,7 @@
         af.poNumber = (document.getElementById("fPoNumber").value || "")
           .trim()
           .toLowerCase();
-        af.receivedDate = (
-          document.getElementById("fReceivedDate").value || ""
-        )
+        af.receivedDate = (document.getElementById("fReceivedDate").value || "")
           .trim()
           .toLowerCase();
         page = 1;
@@ -1304,9 +1302,14 @@
       }
 
       function resetFilters() {
-        ["fKeyword", "fOem", "fService", "fStatus", "fPoNumber", "fReceivedDate"].forEach(
-          (id) => (document.getElementById(id).value = ""),
-        );
+        [
+          "fKeyword",
+          "fOem",
+          "fService",
+          "fStatus",
+          "fPoNumber",
+          "fReceivedDate",
+        ].forEach((id) => (document.getElementById(id).value = ""));
         Object.keys(af).forEach((k) => (af[k] = ""));
         statusFilter = "all";
         rmaFilter = "";
@@ -1498,7 +1501,7 @@
 
       function goPage(p) {
         const total = Math.ceil(filtered.length / PAGE_SIZE) || 1;
-        page = Math.max(1, Math.mhow in(p, total));
+        page = Math.max(1, Math.mhow in (p, total));
         renderTable();
       }
 

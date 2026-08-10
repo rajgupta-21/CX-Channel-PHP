@@ -102,8 +102,9 @@
   <footer class="footer">FASTECH India Customer Portal</footer>
 
   <script>
+    const API = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '');
     const session = JSON.parse(localStorage.getItem('fastech_team_session') || 'null');
-    if (!session) window.location.href = '/team-login.html';
+    if (!session) window.location.href = API + '/team-login.html';
 
     function statusClass(status) {
       const s = String(status || '').toLowerCase();
@@ -126,7 +127,7 @@
       const area = document.getElementById('requestArea');
       area.innerHTML = '<div class="empty">Loading requests...</div>';
       try {
-        const res = await fetch('/api/requests');
+        const res = await fetch(API + '/api/requests');
         const data = await res.json();
         const open = data.filter(r => String(r.status || 'pending').toLowerCase() === 'pending').length;
         const progress = data.filter(r => ['review','forwarded','in progress','progress'].includes(String(r.status || '').toLowerCase())).length;
@@ -165,7 +166,7 @@
     async function showCustomer(name) {
       const box = document.getElementById('customerHistory');
       try {
-        const res = await fetch('/api/requests');
+        const res = await fetch(API + '/api/requests');
         const data = await res.json();
         const items = data.filter(x => x.name === name);
         if (!items.length) {
@@ -188,7 +189,7 @@
 
     async function showTicket(id) {
       try {
-        const res = await fetch('/api/requests/' + encodeURIComponent(id));
+        const res = await fetch(API + '/api/requests/' + encodeURIComponent(id));
         if (!res.ok) return;
         const data = await res.json();
         const t = data.request;
@@ -243,7 +244,7 @@
     function logout() {
       localStorage.removeItem('fastech_team_session');
       localStorage.removeItem('fastech_requests');
-      window.location.href = '/login.html';
+      window.location.href = API + '/login.html';
     }
 
     window.addEventListener('load', loadRequests);
