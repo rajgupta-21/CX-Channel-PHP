@@ -6,6 +6,9 @@
 
 RewriteEngine On
 
+# Never expose the error logs over HTTP
+RewriteRule ^server/logs/ - [F,L]
+
 # API, auth and upload routes go to the PHP front controller
 RewriteRule ^(api|auth|uploads)(/.*)?$ server/index.php [L,QSA]
 

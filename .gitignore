@@ -4,5 +4,6 @@ vendor/
 server/uploads/*
 !server/uploads/.gitkeep
 *.log
+server/logs/
 .env
 .env.local
