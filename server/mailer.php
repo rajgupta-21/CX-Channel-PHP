@@ -27,7 +27,7 @@ function send_mail(array $opts): array
         $mail->setFrom($mail->Username, 'Admin');
         $mail->addAddress($to);
 
-        $cc = $opts['cc'] ?? env('CC_EMAIL');
+        $cc = (string) ($opts['cc'] ?? '');
         if (!empty($cc)) {
             foreach (array_filter(explode(',', (string) $cc), 'trim') as $addr) {
                 $mail->addCC(trim($addr));

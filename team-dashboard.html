@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Team Dashboard</title>
   <style>
-    :root{--bg:#f4f7fb;--card:#fff;--nav:#0d4a8d;--accent:#d61f3a;--text:#122033;--muted:#607089;--line:#d9e3ef}
+    :root{--bg:#FFFFFF;--card:#fff;--nav:#00538F;--accent:#ED3059;--text:#222222;--muted:#709EC0;--line:#d9e3ef}
     *{box-sizing:border-box}
     body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
     a{text-decoration:none;color:inherit}
-    .topbar{background:#0b2b4c;color:#fff;padding:10px 24px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:14px}
+    .topbar{background:#00447A;color:#fff;padding:10px 24px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:14px}
     .header{background:#fff;border-bottom:1px solid var(--line);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
     .brand{display:flex;align-items:center;gap:12px}
     .logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--nav),var(--accent));display:grid;place-items:center;color:#fff;font-weight:800}
@@ -29,10 +29,10 @@
     .toolbar{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0 16px}
     .btn{border:none;border-radius:12px;padding:11px 16px;font-weight:700;cursor:pointer;font:inherit}
     .btn-primary{background:var(--accent);color:#fff}
-    .btn-secondary{background:#eaf0f8;color:#27415f}
+    .btn-secondary{background:#FBECD7;color:#709EC0}
     .table{width:100%;border-collapse:collapse}
     .table th,.table td{padding:12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-    .table th{font-size:12px;color:#29415f;text-transform:uppercase;letter-spacing:.03em}
+    .table th{font-size:12px;color:#709EC0;text-transform:uppercase;letter-spacing:.03em}
     .badge{display:inline-block;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:700}
     .open{background:#eef4ff;color:#1b57c6}
     .progress{background:#fff4e5;color:#b25a00}
@@ -41,7 +41,7 @@
     .empty{padding:20px;background:#f8fbff;border:1px dashed var(--line);border-radius:14px;color:var(--muted)}
     .box{border:1px solid var(--line);border-radius:14px;padding:16px;background:#fff;line-height:1.7}
     .clickable{color:var(--nav);font-weight:700;cursor:pointer;text-decoration:underline}
-    .footer{margin-top:28px;padding:18px 24px;background:#0b2b4c;color:#dce7f5;text-align:center}
+    .footer{margin-top:28px;padding:18px 24px;background:#00447A;color:#dce7f5;text-align:center}
     @media (max-width:900px){.stats{grid-template-columns:1fr 1fr}}
     @media (max-width:700px){.topbar,.header,.nav{padding-left:14px;padding-right:14px}.wrap{padding:0 14px}.stats{grid-template-columns:1fr}.table{display:block;overflow-x:auto}}
   </style>
@@ -70,7 +70,6 @@
     <a href="index.html">Home</a>
     <a href="customer.html">Requests</a>
     <a href="team-login.html">Team Login</a>
-    <a href="team-signup.html">Team Signup</a>
     <a class="active" href="team-dashboard.html">Team Dashboard</a>
   </nav>
 
@@ -197,14 +196,14 @@
           '<!doctype html><html lang="en"><head><meta charset="utf-8">',
           '<meta name="viewport" content="width=device-width,initial-scale=1">',
           '<title>Ticket ' + esc(t.id) + '<\/title>',
-          '<style>body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#122033}',
+          '<style>body{margin:0;font-family:Arial,sans-serif;background:#FFFFFF;color:#222222}',
           '.wrap{max-width:900px;margin:24px auto;padding:0 16px}',
           '.card{background:#fff;border:1px solid #d9e3ef;border-radius:18px;padding:24px}',
           'h1{margin:0 0 10px}',
-          '.sub{color:#607089;margin:0 0 18px}',
+          '.sub{color:#709EC0;margin:0 0 18px}',
           '.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}',
           '.item{padding:14px;border:1px solid #d9e3ef;border-radius:14px}',
-          '.item strong{display:block;color:#29415f;margin-bottom:4px}',
+          '.item strong{display:block;color:#709EC0;margin-bottom:4px}',
           '.wide{grid-column:1/-1}',
           '<\/style><\/head><body>',
           '<div class="wrap"><div class="card">',

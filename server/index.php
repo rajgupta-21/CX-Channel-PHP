@@ -1,5 +1,3 @@
-
-text/x-generic index.php ( PHP script, UTF-8 Unicode text )
 <?php
 
 declare(strict_types=1);
@@ -32,7 +30,7 @@ const ROUTES_EXTRA = [];
 
 function is_server_root_page(string $path): bool
 {
-    return in_array($path, ['/', '/landing.html', '/index.html', '/customer.html', '/login.html', '/signup.html', '/team-signup.html'], true);
+    return in_array($path, ['/', '/landing.html', '/index.html', '/customer.html', '/login.html', '/create-admin.html'], true);
 }
 
 function server_root_page_file(string $path): ?string
@@ -109,7 +107,7 @@ $path = '/' . ltrim($path, '/');
         ['GET',  '/api/stats',                   'requests_stats'],
         ['POST', '/api/auth/login',              'auth_login'],
         ['POST', '/api/auth/customer-login',     'auth_customer_login'],
-        ['POST', '/auth/signup',                 'auth_signup'],
+        ['POST', '/api/admin/create',          'admin_create'],
         ['GET',  '/api/support',                 'support_list'],
         ['GET',  '/api/support/stats',           'support_stats'],
         ['GET',  '/api/support/export/csv',      'support_export_csv'],

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FASCAL — Customer Portal</title>
+    <title>Fastech — Customer Portal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -19,15 +19,19 @@
         padding: 0;
       }
       :root {
-        --bg1: #08121f;
-        --bg2: #0f172a;
-        --border: rgba(255, 255, 255, 0.14);
-        --text: #f8fafc;
-        --muted: #cbd5e1;
-        --primary: #38bdf8;
-        --primary2: #0ea5e9;
-        --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
-        --r-xl: 28px;
+        --blue: #00538f;
+        --blue2: #00447a;
+        --red: #ed3059;
+        --red2: #c81e45;
+        --ink: #222222;
+        --muted: #5b6b7c;
+        --line: #e2e8ee;
+        --beige: #fbecd7;
+        --soft: #e9f1f8;
+        --shadow: 0 12px 32px rgba(0, 40, 80, 0.1);
+        --r-xl: 22px;
+        --r-lg: 16px;
+        --r-md: 12px;
       }
       html {
         font-family: Inter, sans-serif;
@@ -35,19 +39,8 @@
       }
       body {
         min-height: 100vh;
-        background:
-          radial-gradient(
-            circle at top left,
-            rgba(56, 189, 248, 0.18),
-            transparent 28%
-          ),
-          radial-gradient(
-            circle at right top,
-            rgba(14, 165, 233, 0.15),
-            transparent 24%
-          ),
-          linear-gradient(180deg, var(--bg1), var(--bg2));
-        color: var(--text);
+        background: #fff;
+        color: var(--ink);
       }
       a {
         color: inherit;
@@ -63,19 +56,20 @@
         min-height: 100vh;
         display: flex;
         flex-direction: column;
+        background: #fff;
       }
       .topbar {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 16px;
-        padding: 18px 24px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        background: rgba(8, 18, 31, 0.5);
-        backdrop-filter: blur(14px);
+        padding: 16px 24px;
+        background: linear-gradient(135deg, var(--blue), var(--blue2));
+        color: #fff;
         position: sticky;
         top: 0;
         z-index: 20;
+        box-shadow: 0 2px 10px rgba(0, 40, 80, 0.15);
       }
       .brand {
         display: flex;
@@ -83,17 +77,17 @@
         gap: 12px;
       }
       .logo {
-        width: 46px;
-        height: 46px;
-        border-radius: 16px;
-        background: linear-gradient(135deg, var(--primary), var(--primary2));
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.22);
         display: grid;
         place-items: center;
-        box-shadow: 0 12px 28px rgba(14, 165, 233, 0.28);
       }
       .logo svg {
-        width: 22px;
-        height: 22px;
+        width: 20px;
+        height: 20px;
       }
       .brand h1 {
         font-size: 18px;
@@ -102,19 +96,19 @@
         line-height: 1;
       }
       .brand p {
-        font-size: 11px;
+        font-size: 10.5px;
         text-transform: uppercase;
-        letter-spacing: 0.18em;
-        opacity: 0.7;
-        margin-top: 4px;
+        letter-spacing: 0.16em;
+        opacity: 0.75;
+        margin-top: 3px;
       }
       .btn {
-        min-height: 42px;
+        min-height: 40px;
         padding: 0 16px;
-        border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        background: rgba(255, 255, 255, 0.08);
-        color: var(--text);
+        border-radius: 9px;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--blue2);
         cursor: pointer;
         font-weight: 700;
         display: inline-flex;
@@ -124,7 +118,7 @@
         transition: 0.15s ease;
       }
       .btn:hover {
-        background: rgba(255, 255, 255, 0.12);
+        background: var(--beige);
       }
       .btn:disabled {
         opacity: 0.7;
@@ -147,33 +141,36 @@
         }
       }
       .btn-primary {
-        background: linear-gradient(135deg, var(--primary), var(--primary2));
+        background: linear-gradient(135deg, var(--red), var(--red2));
         border-color: transparent;
         color: #fff;
-        box-shadow: 0 10px 24px rgba(14, 165, 233, 0.28);
+        box-shadow: 0 6px 16px rgba(237, 48, 89, 0.24);
+      }
+      .btn-primary:hover {
+        background: linear-gradient(135deg, var(--red2), var(--red2));
       }
       .hero {
         padding: 28px 24px 16px;
+        background:
+          radial-gradient(circle at 85% 0%, var(--beige), transparent 45%),
+          linear-gradient(160deg, #fff 40%, #f7fafc 100%);
       }
       .hero-card {
-        background: linear-gradient(
-          135deg,
-          rgba(255, 255, 255, 0.1),
-          rgba(255, 255, 255, 0.06)
-        );
-        border: 1px solid var(--border);
-        border-radius: 30px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: var(--r-xl);
         box-shadow: var(--shadow);
-        padding: 24px;
+        padding: 26px;
         display: grid;
         grid-template-columns: 1.2fr 0.8fr;
-        gap: 20px;
+        gap: 24px;
       }
       .hero-copy h2 {
-        font-size: 34px;
+        font-size: 32px;
         line-height: 1.1;
-        letter-spacing: -0.05em;
-        max-width: 14ch;
+        letter-spacing: -0.04em;
+        color: var(--blue2);
+        max-width: 16ch;
       }
       .hero-copy p {
         color: var(--muted);
@@ -188,72 +185,78 @@
         margin-top: 18px;
       }
       .badge {
-        padding: 8px 12px;
+        padding: 7px 12px;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: var(--soft);
+        border: 1px solid #d6e3ef;
+        color: var(--blue2);
         font-size: 12px;
         font-weight: 700;
       }
       .hero-side {
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: 24px;
+        background: var(--beige);
+        border: 1px solid #f0dfc0;
+        border-radius: var(--r-lg);
         padding: 18px;
         display: grid;
         gap: 12px;
         align-content: start;
       }
       .mini-stat {
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: 18px;
+        background: #fff;
+        border: 1px solid #e7d7ba;
+        border-radius: var(--r-md);
         padding: 14px;
       }
       .mini-stat span {
         display: block;
         font-size: 11px;
         text-transform: uppercase;
-        letter-spacing: 0.14em;
+        letter-spacing: 0.1em;
         color: var(--muted);
         margin-bottom: 6px;
       }
       .mini-stat strong {
         font-size: 28px;
         line-height: 1;
+        color: var(--blue2);
       }
       .main {
         padding: 8px 24px 28px;
         display: grid;
         gap: 18px;
+        background: #fff;
       }
       .panel {
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid var(--border);
+        background: #fff;
+        border: 1px solid var(--line);
         border-radius: var(--r-xl);
         box-shadow: var(--shadow);
         overflow: hidden;
       }
       .panel-head {
-        padding: 18px 20px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 18px 22px;
+        border-bottom: 1px solid var(--line);
         display: flex;
         justify-content: space-between;
         align-items: start;
         gap: 16px;
         flex-wrap: wrap;
+        background: linear-gradient(180deg, #fff, #fafcfe);
       }
       .panel-head h3 {
         font-size: 18px;
         font-weight: 800;
-        letter-spacing: -0.03em;
+        letter-spacing: -0.02em;
+        color: var(--blue2);
       }
       .panel-head p {
         color: var(--muted);
         margin-top: 4px;
       }
       .panel-body {
-        padding: 18px 20px 20px;
+        padding: 20px 22px 22px;
+        background: #fff;
       }
       .form-grid {
         display: grid;
@@ -277,16 +280,16 @@
         width: 100%;
         text-align: left;
         padding: 10px 12px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        background: rgba(8, 15, 27, 0.72);
-        color: var(--text);
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--ink);
         cursor: pointer;
       }
       .search-result:hover,
       .search-result.active {
-        background: rgba(56, 189, 248, 0.16);
-        border-color: rgba(56, 189, 248, 0.4);
+        background: var(--soft);
+        border-color: var(--blue);
       }
       .search-result.empty {
         cursor: default;
@@ -296,10 +299,10 @@
         font-size: 12px;
         font-weight: 700;
         letter-spacing: 0.02em;
-        color: #e2e8f0;
+        color: var(--ink);
       }
       label .req {
-        color: #f87171;
+        color: var(--red);
         margin-left: 3px;
         font-size: 13px;
       }
@@ -308,15 +311,29 @@
       textarea {
         width: 100%;
         min-height: 44px;
-        border-radius: 14px;
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        background: rgba(15, 23, 42, 0.58);
-        color: var(--text);
-        padding: 11px 14px;
+        border-radius: 10px;
+        border: 1px solid #cacaca;
+        background: #fff;
+        color: var(--ink);
+        padding: 10px 14px;
         outline: none;
         transition:
           border-color 0.15s,
           box-shadow 0.15s;
+      }
+      select {
+        background-image:
+          linear-gradient(45deg, transparent 50%, var(--blue2) 50%),
+          linear-gradient(135deg, var(--blue2) 50%, transparent 50%);
+        background-position:
+          calc(100% - 20px) 50%,
+          calc(100% - 15px) 50%;
+        background-size:
+          5px 5px,
+          5px 5px;
+        background-repeat: no-repeat;
+        appearance: none;
+        padding-right: 36px;
       }
       textarea {
         min-height: 112px;
@@ -325,8 +342,8 @@
       input:focus,
       select:focus,
       textarea:focus {
-        border-color: rgba(56, 189, 248, 0.8);
-        box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.12);
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(0, 83, 143, 0.1);
       }
       input[type="file"] {
         padding: 10px 14px;
@@ -334,9 +351,9 @@
         min-height: 44px;
       }
       input[type="file"]::-webkit-file-upload-button {
-        background: linear-gradient(135deg, var(--primary), var(--primary2));
+        background: linear-gradient(135deg, var(--blue), var(--blue2));
         border: none;
-        border-radius: 8px;
+        border-radius: 6px;
         color: #fff;
         cursor: pointer;
         font-weight: 700;
@@ -365,7 +382,7 @@
       .section-divider {
         grid-column: 1/-1;
         border: none;
-        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        border-top: 1px solid var(--line);
         margin: 4px 0;
       }
       .section-divider.hidden {
@@ -376,8 +393,9 @@
         font-size: 12px;
         font-weight: 800;
         letter-spacing: 0.02em;
-        color: var(--muted);
+        color: var(--blue);
         padding-bottom: 2px;
+        text-transform: uppercase;
       }
       .note {
         font-size: 12px;
@@ -388,9 +406,9 @@
         width: 100%;
         max-height: 140px;
         overflow-y: auto;
-        border-radius: 14px;
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        background: rgba(15, 23, 42, 0.58);
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: var(--beige);
         color: var(--muted);
         padding: 12px 14px;
         font-size: 13.5px;
@@ -408,24 +426,26 @@
         display: none;
         margin-top: 16px;
         padding: 14px 16px;
-        border-radius: 16px;
+        border-radius: 12px;
         font-weight: 600;
         border: 1px solid transparent;
       }
       .success {
-        background: rgba(34, 197, 94, 0.14);
-        color: #dcfce7;
-        border-color: rgba(34, 197, 94, 0.25);
+        background: #eaf7ef;
+        color: #1f7a44;
+        border-color: #bfe3ce;
       }
       .error {
-        background: rgba(239, 68, 68, 0.14);
-        color: #fee2e2;
-        border-color: rgba(239, 68, 68, 0.25);
+        background: #fdecec;
+        color: #c81e45;
+        border-color: #f7c8d2;
       }
       .footer {
-        padding: 0 24px 24px;
-        color: rgba(226, 232, 240, 0.72);
+        padding: 18px 24px;
+        background: var(--blue2);
+        color: rgba(255, 255, 255, 0.8);
         font-size: 12px;
+        text-align: center;
       }
       @media (max-width: 980px) {
         .hero-card {
@@ -450,7 +470,7 @@
           grid-template-columns: 1fr;
         }
         .hero-copy h2 {
-          font-size: 28px;
+          font-size: 26px;
         }
       }
     </style>
@@ -472,7 +492,7 @@
             </svg>
           </div>
           <div>
-            <h1>FASCAL</h1>
+            <h1>Fastech</h1>
             <p>Customer Portal</p>
           </div>
         </div>
@@ -486,7 +506,7 @@
           <div class="hero-copy">
             <h2>Submit your service request in a few simple steps.</h2>
             <p>
-              Use this portal to raise a new TMI request directly with FASCAL.
+              Use this portal to raise a new TMI request directly with Fastech.
               Fill in your details and submit — our team will follow up with
               you.
             </p>
@@ -498,13 +518,17 @@
           </div>
           <div class="hero-side">
             <div class="mini-stat">
-              <span>New Request</span><strong>Fast</strong>
+              <span>Call us</span><a>+91 (22) 2835 3636</a>
             </div>
             <div class="mini-stat">
-              <span>Support</span><strong>Clean</strong>
+              <span>Write to us</span
+              ><a href="mailto:info@fastech-india.com"
+                >info@fastech-india.com</a
+              >
             </div>
             <div class="mini-stat">
-              <span>Portal</span><strong>Secure</strong>
+              <span>229-231, Keytuo Industrial Estate, Kondivita</span
+              ><span>Road, Andheri (East), Mumbai, India.</span>
             </div>
           </div>
         </div>
@@ -794,7 +818,9 @@
     </div>
 
     <script>
-      const API = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '');
+      const API =
+        window.location.origin +
+        window.location.pathname.replace(/\/[^/]*$/, "");
       const OEM_MODELS = {
         Narda: [
           "SRM-3006",

@@ -59,7 +59,7 @@ function generate_rma_number(): string
     $raw = (string) ($stmt->fetch()['m'] ?? '');
     $digits = preg_replace('/\D/', '', $raw);
     $max = $digits !== '' && $digits !== '0' ? (int) $digits : 0;
-    return str_pad((string) ($max + 1), 5, '0', STR_PAD_LEFT);
+    return str_pad((string) max(12000, $max + 1), 5, '0', STR_PAD_LEFT);
 }
 
 function parse_ist($str): int

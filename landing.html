@@ -3,32 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FASCAL — Welcome</title>
+  <title>Fastech — Welcome</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    :root{--bg:#08111e;--line:rgba(255,255,255,.10);--text:#f8fafc;--muted:#94a3b8;--blue:#1fb6ff;--blue2:#1992d4;--shadow:0 24px 70px rgba(0,0,0,.42)}
-    body{min-height:100vh;font-family:Inter,sans-serif;color:var(--text);background:radial-gradient(circle at top left, rgba(31,182,255,.12), transparent 30%),linear-gradient(180deg,#08111e,#0a1530 55%,#08111e);display:grid;place-items:center;padding:20px}
-    .card{width:min(560px,100%);background:rgba(15,23,42,.92);border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow);padding:34px}
+    :root{--blue:#00538F;--blue2:#00447A;--red:#ED3059;--ink:#222222;--muted:#5b6b7c;--line:#E2E8EE;--beige:#FBECD7}
+    body{min-height:100vh;font-family:Inter,sans-serif;color:var(--ink);background:#FFFFFF;display:grid;place-items:center;padding:20px}
+    .page{width:100%;max-width:860px;min-height:100vh;display:grid;place-items:center}
+    .card{width:min(560px,100%);background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:0 18px 50px rgba(0,40,80,.12);padding:36px}
     .brand{display:flex;align-items:center;gap:12px;margin-bottom:28px}
-    .logo{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,var(--blue),var(--blue2));display:grid;place-items:center;font-size:24px;box-shadow:0 12px 30px rgba(31,182,255,.25)}
-    .brand h1{font-size:20px;font-weight:800;line-height:1}
+    .logo{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--blue),var(--blue2));display:grid;place-items:center;font-size:24px;box-shadow:0 8px 18px rgba(0,83,143,.22)}
+    .brand h1{font-size:20px;font-weight:800;line-height:1;color:var(--blue2)}
     .brand p{font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:var(--muted);margin-top:4px}
     h2{font-size:28px;font-weight:800;letter-spacing:-.04em;margin-bottom:8px}
     .sub{color:var(--muted);margin-bottom:28px;line-height:1.6}
     .options{display:grid;gap:14px}
-    .option{display:flex;align-items:center;gap:14px;padding:18px;border-radius:18px;border:1px solid var(--line);background:#0b1220;text-decoration:none;color:var(--text);transition:.15s ease}
-    .option:hover{border-color:rgba(31,182,255,.5);background:#0d1626}
-    .option-icon{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;font-size:20px;flex-shrink:0;background:rgba(31,182,255,.12);border:1px solid rgba(31,182,255,.2)}
-    .option-text strong{display:block;font-size:15px;font-weight:800;margin-bottom:3px}
+    .option{display:flex;align-items:center;gap:14px;padding:18px;border-radius:14px;border:1px solid var(--line);background:#fff;text-decoration:none;color:var(--ink);transition:.15s ease}
+    .option:hover{border-color:var(--blue);background:var(--beige)}
+    .option-icon{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:20px;flex-shrink:0;background:#E9F1F8;border:1px solid #D3E2EF}
+    .option-text strong{display:block;font-size:15px;font-weight:800;margin-bottom:3px;color:var(--ink)}
     .option-text span{font-size:13px;color:var(--muted);line-height:1.5}
-    .option-arrow{margin-left:auto;color:var(--muted);font-size:18px;flex-shrink:0}
+    .option-arrow{margin-left:auto;color:var(--blue);font-size:18px;flex-shrink:0}
     .divider{display:flex;align-items:center;gap:10px;margin:22px 0 16px;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.14em}
     .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--line)}
     .links{text-align:center;font-size:14px;color:var(--muted)}
-    .links a{color:var(--blue);text-decoration:none;font-weight:700}
+    .links a{color:var(--red);text-decoration:none;font-weight:700}
     .links a:hover{text-decoration:underline}
   </style>
 </head>
@@ -36,10 +37,10 @@
   <div class="card">
     <div class="brand">
       <div class="logo">🛰️</div>
-      <div><h1>FASCAL</h1><p>Service Portal</p></div>
+      <div><h1>Fastech</h1><p>Service Portal</p></div>
     </div>
 
-    <h2>Welcome to FASCAL</h2>
+    <h2>Welcome to Fastech</h2>
     <p class="sub">Choose how you'd like to continue.</p>
 
     <div class="options">
@@ -65,7 +66,7 @@
     <div class="divider">New to the team</div>
 
     <div class="links">
-      Don't have a team account yet? <a href="team-signup.html">Create one</a>
+      New team accounts are created by an administrator.
     </div>
   </div>
 </body>

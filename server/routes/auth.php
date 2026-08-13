@@ -60,17 +60,64 @@ function auth_customer_login(): never
     ]);
 }
 
-function auth_signup(): never
+/**
+ * Resolve the caller from the Authorization header.
+ *
+ * The rest of the app uses a lightweight `fake-jwt-<user id>` token issued at
+ * login. This helper turns it back into the user row so protected endpoints
+ * can enforce server-side authorization instead of trusting the client.
+ */
+function bearer_user(): ?array
 {
+    $header = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '';
+    if ($header === '' && function_exists('apache_request_headers')) {
+        foreach (apache_request_headers() as $k => $v) {
+            if (strcasecmp($k, 'Authorization') === 0) {
+                $header = $v;
+                break;
+            }
+        }
+    }
+
+    if (!preg_match('/^Bearer\s+fake-jwt-(\d+)$/i', trim($header), $m)) {
+        return null;
+    }
+
+    $stmt = db()->prepare('SELECT * FROM users WHERE id = ? LIMIT 1');
+    $stmt->execute([(int) $m[1]]);
+    $user = $stmt->fetch();
+
+    return $user ?: null;
+}
+
+/**
+ * Require the caller to be a logged-in team member with the admin department.
+ */
+function require_admin(): array
+{
+    $user = bearer_user();
+    if (!$user || $user['role'] !== 'team' || strtolower($user['department'] ?? '') !== 'admin') {
+        json_error('Admin access required.', 403);
+    }
+    return $user;
+}
+
+/**
+ * POST /api/admin/create — protected. Only a logged-in admin can create
+ * another admin. Replaces the old public /auth/signup.
+ */
+function admin_create(): never
+{
+    require_admin();
+
     $body = body_json();
     $firstName = trim((string) ($body['firstName'] ?? ''));
     $lastName  = trim((string) ($body['lastName'] ?? ''));
     $username  = trim((string) ($body['username'] ?? ''));
     $email     = trim((string) ($body['email'] ?? ''));
-    $role      = trim((string) ($body['role'] ?? ''));
     $password  = (string) ($body['password'] ?? '');
 
-    if ($firstName === '' || $lastName === '' || $username === '' || $email === '' || $role === '' || $password === '') {
+    if ($firstName === '' || $lastName === '' || $username === '' || $email === '' || $password === '') {
         json_response(['error' => 'All fields are required.'], 400);
     }
     if (strlen($password) < 8) {
@@ -97,8 +144,8 @@ function auth_signup(): never
         'INSERT INTO users (first_name, last_name, username, email, role, department, password, created_at)
          VALUES (?, ?, ?, ?, ?, ?, ?, NOW())',
     );
-    $stmt->execute([$firstName, $lastName, $username, $email, 'team', $role, $hash]);
+    $stmt->execute([$firstName, $lastName, $username, $email, 'team', 'admin', $hash]);
 
     http_response_code(201);
-    json_response(['message' => 'Account created successfully.']);
+    json_response(['message' => 'Admin created successfully.']);
 }

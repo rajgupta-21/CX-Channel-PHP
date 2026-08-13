@@ -1,0 +1,735 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fastech — Create Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --bg: #ffffff;
+        --surface: #fff;
+        --line: #dbe5f0;
+        --text: #222222;
+        --muted: #709ec0;
+        --primary: #00538f;
+        --primary-dark: #00538f;
+        --danger: #ef4444;
+        --danger-bg: #fef2f2;
+        --ok: #16a34a;
+        --ok-bg: #f0fdf4;
+        --shadow:
+          0 4px 16px rgba(15, 23, 42, 0.07), 0 2px 4px rgba(15, 23, 42, 0.04);
+        --r-lg: 18px;
+        --r-md: 14px;
+        --r-sm: 10px;
+      }
+      html {
+        font-family: Inter, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+      button {
+        cursor: pointer;
+        font: inherit;
+      }
+      .app {
+        display: grid;
+        grid-template-columns: 252px 1fr;
+        min-height: 100vh;
+      }
+      .sidebar {
+        background: linear-gradient(180deg, #00447a, #00538f 100%);
+        color: #e2e8f0;
+        display: flex;
+        flex-direction: column;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        border-right: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 20px 18px 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .brand-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 800;
+      }
+      .brand-name {
+        font-size: 17px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1;
+      }
+      .brand-sub {
+        font-size: 10.5px;
+        opacity: 0.6;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-top: 3px;
+        font-weight: 700;
+      }
+      .user-panel {
+        margin: 14px 12px 0;
+        background: rgba(255, 255, 255, 0.055);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 14px;
+        padding: 12px 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .user-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #00538f, #00538f);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        color: #fff;
+      }
+      .user-meta small {
+        display: block;
+        font-size: 10px;
+        opacity: 0.6;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        margin-bottom: 2px;
+      }
+      .user-meta strong {
+        font-size: 13.5px;
+        font-weight: 700;
+      }
+      .nav-section {
+        padding: 18px 12px 0;
+      }
+      .nav-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        opacity: 0.45;
+        font-weight: 700;
+        padding: 0 8px 6px;
+      }
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 42px;
+        padding: 9px 12px;
+        border-radius: 10px;
+        color: #c8d8ec;
+        border: 1px solid transparent;
+        background: transparent;
+        font-size: 13.5px;
+        font-weight: 600;
+        width: 100%;
+        text-align: left;
+      }
+      .nav-item:hover,
+      .nav-item.active {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(255, 255, 255, 0.08);
+        color: #fff;
+      }
+      .sidebar-footer {
+        margin: auto 12px 0;
+        padding-top: 16px;
+        padding-bottom: 12px;
+      }
+      .btn-logout {
+        width: 100%;
+        min-height: 40px;
+        background: rgba(239, 68, 68, 0.14);
+        border: 1px solid rgba(239, 68, 68, 0.25);
+        color: #fca5a5;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      .main-wrap {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+      .navbar {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        height: 58px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 0 24px;
+        background: rgba(244, 247, 251, 0.9);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(219, 229, 240, 0.9);
+      }
+      .page-title {
+        font-size: 17px;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+        line-height: 1;
+      }
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12.5px;
+        color: var(--muted);
+      }
+      .icon-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+        font-weight: 800;
+      }
+      .content {
+        padding: 20px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        align-items: center;
+        justify-content: center;
+        min-height: calc(100vh - 58px);
+      }
+      .page-header,
+      .card {
+        width: 100%;
+      }
+      .card {
+        box-sizing: border-box;
+      }
+      .page-header h1 {
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        line-height: 1.2;
+      }
+      .page-header p {
+        color: var(--muted);
+        margin-top: 4px;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--r-lg);
+        box-shadow: var(--shadow);
+        padding: 24px;
+        max-width: 620px;
+      }
+      .card h2 {
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 6px;
+      }
+      .card .subtext {
+        color: var(--muted);
+        font-size: 13.5px;
+        margin-bottom: 20px;
+      }
+      .alert {
+        display: none;
+        border-radius: var(--r-md);
+        padding: 12px 14px;
+        font-size: 13.5px;
+        font-weight: 700;
+        margin-bottom: 16px;
+        border: 1px solid transparent;
+      }
+      .alert.show {
+        display: block;
+      }
+      .alert.error {
+        background: var(--danger-bg);
+        color: #b91c1c;
+        border-color: #fecaca;
+      }
+      .alert.success {
+        background: var(--ok-bg);
+        color: #15803d;
+        border-color: #bbf7d0;
+      }
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .field {
+        margin-bottom: 14px;
+      }
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        color: #444;
+      }
+      input {
+        width: 100%;
+        height: 44px;
+        border-radius: var(--r-sm);
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--text);
+        padding: 0 14px;
+        outline: none;
+        font: inherit;
+        font-size: 13.5px;
+        transition: 0.2s ease;
+      }
+      input::placeholder {
+        color: #709ec0;
+      }
+      input:focus {
+        border-color: rgba(14, 165, 233, 0.7);
+        box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.12);
+      }
+      .password-wrap {
+        position: relative;
+      }
+      .password-wrap input {
+        padding-right: 48px;
+      }
+      .toggle {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        color: #709ec0;
+        cursor: pointer;
+        font-size: 15px;
+      }
+      .hint {
+        margin-top: 6px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .submit-btn {
+        width: 100%;
+        height: 48px;
+        margin-top: 8px;
+        border: none;
+        border-radius: var(--r-md);
+        cursor: pointer;
+        font: inherit;
+        font-size: 15px;
+        font-weight: 800;
+        color: #fff;
+        background: linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+        box-shadow: 0 10px 20px rgba(14, 165, 233, 0.25);
+        transition: 0.2s ease;
+      }
+      .submit-btn:hover {
+        transform: translateY(-1px);
+      }
+      .submit-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+      }
+      .spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.35);
+        border-top-color: #fff;
+        border-radius: 50%;
+        display: inline-block;
+        vertical-align: -2px;
+        margin-right: 8px;
+        animation: spin 0.7s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @media (max-width: 900px) {
+        .app {
+          grid-template-columns: 1fr;
+        }
+        .sidebar {
+          position: static;
+          height: auto;
+        }
+      }
+      @media (max-width: 560px) {
+        .content {
+          padding: 14px 14px;
+        }
+        .card {
+          padding: 18px;
+        }
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-icon">F</div>
+          <div>
+            <div class="brand-name">Fastech</div>
+            <div class="brand-sub">CX Channel Admin</div>
+          </div>
+        </div>
+
+        <div class="user-panel">
+          <div class="user-avatar" id="userAvatarSidebar">A</div>
+          <div class="user-meta">
+            <small>Signed in as</small
+            ><strong id="userNameSidebar">admin</strong>
+          </div>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-label">Main Menu</div>
+          <button
+            class="nav-item"
+            onclick="window.location.href = 'index.html'"
+          >
+            Dashboard
+          </button>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-label">Requests</div>
+          <button
+            class="nav-item"
+            onclick="window.location.href = 'index.html'"
+          >
+            View RMA Requests
+          </button>
+          <button
+            class="nav-item"
+            onclick="window.location.href = 'team-support-dashboard.html'"
+          >
+            Support Dashboard
+          </button>
+          <button
+            class="nav-item active"
+            onclick="window.location.href = 'create-admin.html'"
+          >
+            Create Admin
+          </button>
+        </div>
+
+        <div class="sidebar-footer">
+          <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+      </aside>
+
+      <main class="main-wrap">
+        <div class="navbar">
+          <div>
+            <div class="page-title">Create Admin</div>
+            <div class="breadcrumb">
+              <span>Home</span><span>›</span><span>Admins</span>
+            </div>
+          </div>
+          <button class="icon-btn" id="userMenuBtn">A</button>
+        </div>
+
+        <div class="content">
+          <div class="card">
+            <h2>New Admin Account</h2>
+            <p class="subtext">
+              Fill in the details below. The new admin will be able to sign in
+              from the team login page.
+            </p>
+
+            <div id="errorBox" class="alert error"></div>
+            <div id="successBox" class="alert success"></div>
+
+            <form id="createAdminForm">
+              <div class="grid-2">
+                <div class="field">
+                  <label for="firstName">First Name</label>
+                  <input
+                    id="firstName"
+                    type="text"
+                    placeholder="Admin"
+                    required
+                  />
+                </div>
+                <div class="field">
+                  <label for="lastName">Last Name</label>
+                  <input
+                    id="lastName"
+                    type="text"
+                    placeholder="User"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="username">Username</label>
+                <input
+                  id="username"
+                  type="text"
+                  placeholder="admin2"
+                  required
+                />
+              </div>
+
+              <div class="field">
+                <label for="email">Email Address</label>
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="admin2@fastech.com"
+                  required
+                />
+              </div>
+
+              <div class="field">
+                <label for="password">Password</label>
+                <div class="password-wrap">
+                  <input
+                    id="password"
+                    type="password"
+                    placeholder="Minimum 8 characters"
+                    required
+                  />
+                  <button
+                    class="toggle"
+                    type="button"
+                    onclick="togglePassword('password', this)"
+                  >
+                    👁
+                  </button>
+                </div>
+                <div class="hint">
+                  Use at least 8 characters. A stronger password is recommended.
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="confirmPassword">Confirm Password</label>
+                <div class="password-wrap">
+                  <input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="Re-enter password"
+                    required
+                  />
+                  <button
+                    class="toggle"
+                    type="button"
+                    onclick="togglePassword('confirmPassword', this)"
+                  >
+                    👁
+                  </button>
+                </div>
+              </div>
+
+              <button id="submitBtn" class="submit-btn" type="submit">
+                Create Admin →
+              </button>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const API =
+        window.location.origin +
+        window.location.pathname.replace(/\/[^/]*$/, "");
+
+      function currentUser() {
+        try {
+          return JSON.parse(localStorage.getItem("cxUser") || "null");
+        } catch {
+          return null;
+        }
+      }
+
+      // Auth guard — team session AND admin department, enforced client-side too.
+      (function requireAdminLogin() {
+        const u = currentUser();
+        if (
+          !u ||
+          !u.token ||
+          u.role !== "team" ||
+          (u.department || "").toLowerCase() !== "admin"
+        ) {
+          window.location.replace("login.html");
+        }
+      })();
+
+      const form = document.getElementById("createAdminForm");
+      const errorBox = document.getElementById("errorBox");
+      const successBox = document.getElementById("successBox");
+      const submitBtn = document.getElementById("submitBtn");
+
+      function setupUser() {
+        const u = currentUser();
+        const n = u?.username || "Admin";
+        const i = n.charAt(0).toUpperCase();
+        document.getElementById("userNameSidebar").textContent = n;
+        document.getElementById("userAvatarSidebar").textContent = i;
+        document.getElementById("userMenuBtn").textContent = i;
+      }
+
+      function showError(message) {
+        successBox.classList.remove("show");
+        errorBox.textContent = message;
+        errorBox.classList.add("show");
+      }
+
+      function showSuccess(message) {
+        errorBox.classList.remove("show");
+        successBox.textContent = message;
+        successBox.classList.add("show");
+      }
+
+      function togglePassword(id, btn) {
+        const input = document.getElementById(id);
+        const isPassword = input.type === "password";
+        input.type = isPassword ? "text" : "password";
+        btn.textContent = isPassword ? "🙈" : "👁";
+      }
+
+      function logout() {
+        localStorage.removeItem("cxUser");
+        window.location.href = "login.html";
+      }
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        errorBox.classList.remove("show");
+        successBox.classList.remove("show");
+
+        const firstName = document.getElementById("firstName").value.trim();
+        const lastName = document.getElementById("lastName").value.trim();
+        const username = document.getElementById("username").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const confirmPassword =
+          document.getElementById("confirmPassword").value;
+
+        if (
+          !firstName ||
+          !lastName ||
+          !username ||
+          !email ||
+          !password ||
+          !confirmPassword
+        ) {
+          showError("Please fill in all fields.");
+          return;
+        }
+        if (password.length < 8) {
+          showError("Password must be at least 8 characters.");
+          return;
+        }
+        if (password !== confirmPassword) {
+          showError("Passwords do not match.");
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner"></span>Creating Admin…';
+
+        const u = currentUser();
+        try {
+          const res = await fetch(`${API}/api/admin/create`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${u?.token || ""}`,
+            },
+            body: JSON.stringify({
+              firstName,
+              lastName,
+              username,
+              email,
+              password,
+            }),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Create Admin →";
+            showError(data.error || data.message || "Could not create admin.");
+            return;
+          }
+
+          showSuccess("Admin created successfully.");
+          form.reset();
+          submitBtn.disabled = true;
+        } catch (err) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Create Admin →";
+          showError("Network error. Please try again.");
+        }
+      });
+
+      setupUser();
+    </script>
+  </body>
+</html>
