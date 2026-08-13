@@ -6,10 +6,7 @@
 
 RewriteEngine On
 
-# Never expose the error logs over HTTP
-RewriteRule ^server/logs/ - [F,L]
-
-# API, auth and upload routes go to the PHP front controller
+# API, auth and upload routes go to PHP front controller
 RewriteRule ^(api|auth|uploads)(/.*)?$ server/index.php [L,QSA]
 
 # Existing files and directories are served normally
@@ -17,5 +14,4 @@ RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# Everything else goes to the landing page
-RewriteRule ^ landing.html [L]
+# Everything else goes to landing page

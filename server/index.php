@@ -1,3 +1,5 @@
+
+text/x-generic index.php ( PHP script, UTF-8 Unicode text )
 <?php
 
 declare(strict_types=1);
@@ -8,8 +10,6 @@ declare(strict_types=1);
  */
 
 error_reporting(E_ALL);
-
-require_once __DIR__ . '/php-error.php';
 
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/helpers.php';
@@ -89,8 +89,15 @@ function static_file_route(string $path): bool
 function resolve_route(): ?array
 {
     $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-    $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
-    $path = '/' . ltrim($path, '/');
+   $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+
+$basePath = '/CX-Channel-PHP';
+
+if (str_starts_with($path, $basePath)) {
+    $path = substr($path, strlen($basePath));
+}
+
+$path = '/' . ltrim($path, '/');
 
     $routes = [
         ['GET',  '/api/requests',                'requests_list'],
