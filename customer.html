@@ -161,48 +161,34 @@
         border-radius: var(--r-xl);
         box-shadow: var(--shadow);
         padding: 26px;
-        display: grid;
-        grid-template-columns: 1.2fr 0.8fr;
-        gap: 24px;
-      }
-      .hero-copy h2 {
-        font-size: 32px;
-        line-height: 1.1;
-        letter-spacing: -0.04em;
-        color: var(--blue2);
-        max-width: 16ch;
-      }
-      .hero-copy p {
-        color: var(--muted);
-        margin-top: 12px;
-        max-width: 58ch;
-        line-height: 1.75;
-      }
-      .hero-badges {
         display: flex;
-        gap: 10px;
+        justify-content: center;
+        align-items: center;
+        gap: 24px;
         flex-wrap: wrap;
-        margin-top: 18px;
       }
-      .badge {
-        padding: 7px 12px;
-        border-radius: 999px;
-        background: var(--soft);
-        border: 1px solid #d6e3ef;
-        color: var(--blue2);
-        font-size: 12px;
-        font-weight: 700;
+      .hero-media {
+        border-radius: var(--r-lg);
+        overflow: hidden;
+        width: 140px;
+        height: 56px;
+        flex-shrink: 0;
+      }
+      .hero-media img {
+        width: 140px;
+        height: 56px;
+        object-fit: cover;
+        object-position: center;
+        display: block;
       }
       .hero-side {
-        background: var(--beige);
-        border: 1px solid #f0dfc0;
-        border-radius: var(--r-lg);
-        padding: 18px;
-        display: grid;
+        display: flex;
+        flex-wrap: wrap;
         gap: 12px;
-        align-content: start;
+        align-items: stretch;
       }
       .mini-stat {
+        flex: 1 1 190px;
         background: #fff;
         border: 1px solid #e7d7ba;
         border-radius: var(--r-md);
@@ -449,7 +435,7 @@
       }
       @media (max-width: 980px) {
         .hero-card {
-          grid-template-columns: 1fr;
+          flex-direction: column;
         }
       }
       @media (max-width: 720px) {
@@ -468,9 +454,6 @@
         }
         .addr-group {
           grid-template-columns: 1fr;
-        }
-        .hero-copy h2 {
-          font-size: 26px;
         }
       }
     </style>
@@ -503,22 +486,18 @@
 
       <section class="hero">
         <div class="hero-card">
-          <div class="hero-copy">
-            <h2>Submit your service request in a few simple steps.</h2>
-            <p>
-              Use this portal to raise a new TMI request directly with Fastech.
-              Fill in your details and submit — our team will follow up with
-              you.
-            </p>
-            <div class="hero-badges">
-              <div class="badge">Customer portal</div>
-              <div class="badge">Fast submission</div>
-              <div class="badge">Secure</div>
-            </div>
+          <div class="hero-media">
+            <img
+              src="specs/fastechcommunications.png"
+              alt="Fastech Communications"
+              width="140"
+              height="56"
+            />
           </div>
           <div class="hero-side">
             <div class="mini-stat">
-              <span>Call us</span><a>+91 (22) 2835 3636</a>
+              <span>Call us</span
+              ><a href="tel:+912228353636">+91 (22) 2835 3636</a>
             </div>
             <div class="mini-stat">
               <span>Write to us</span
@@ -527,8 +506,11 @@
               >
             </div>
             <div class="mini-stat">
-              <span>229-231, Keytuo Industrial Estate, Kondivita</span
-              ><span>Road, Andheri (East), Mumbai, India.</span>
+              <span>Address</span
+              ><span
+                >229-231, Keytuo Industrial Estate, Kondivita Road, Andheri
+                (East), Mumbai, India.</span
+              >
             </div>
           </div>
         </div>
