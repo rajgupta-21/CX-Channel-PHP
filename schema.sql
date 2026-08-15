@@ -79,6 +79,9 @@ CREATE TABLE `requests` (
     `ip_ack_date_from_wh` VARCHAR(191) NOT NULL DEFAULT '',
     `ip_courier_name` VARCHAR(191) NOT NULL DEFAULT '',
     `ip_remark` VARCHAR(191) NOT NULL DEFAULT '',
+    `ip_company_name` VARCHAR(191) NOT NULL DEFAULT '',
+    `ip_location` VARCHAR(191) NOT NULL DEFAULT '',
+    `ip_module_serial_number` VARCHAR(191) NOT NULL DEFAULT '',
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -108,6 +111,7 @@ CREATE TABLE `support` (
     `phone` VARCHAR(191) NOT NULL DEFAULT '',
     `company` VARCHAR(191) NOT NULL DEFAULT '',
     `designation` VARCHAR(191) NOT NULL DEFAULT '',
+    `location` VARCHAR(191) NOT NULL DEFAULT '',
     `software_version` VARCHAR(191) NOT NULL DEFAULT '',
     `serial_single` VARCHAR(191) NOT NULL DEFAULT '',
     `serial_base_unit` VARCHAR(191) NOT NULL DEFAULT '',

@@ -1167,6 +1167,60 @@
         box.style.display = "block";
       }
 
+      // Clears every form field and restores the initial page state so the
+      // user can describe a brand-new request. Also re-enables the submit
+      // button (it stays in the loading state otherwise after a successful
+      // submission).
+      function resetForm() {
+        [
+          "name",
+          "email",
+          "phone",
+          "company",
+          "designation",
+          "location",
+          "oem",
+          "oemOther",
+          "serviceType",
+          "poNumber",
+          "poDate",
+          "product",
+          "productSearch",
+          "productManual",
+          "softwareVersion",
+          "serialSingle",
+          "serialBaseUnit",
+          "serialRfCable",
+          "serialAntenna",
+          "description",
+          "billingAddress",
+          "returnAddress",
+          "calCertificateAddress",
+          "additionalInfo",
+        ].forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.value = "";
+        });
+
+        const fileInput = document.getElementById("imageUpload");
+        if (fileInput) fileInput.value = "";
+        document.getElementById("productResults").innerHTML = "";
+
+        // Restore the same visibility state the page has on first load.
+        updateVisibilityForServiceType("");
+        document.getElementById("addressGroup").classList.remove("active");
+        document.getElementById("dividerSerial").classList.add("hidden");
+        document.getElementById("dividerAddress").classList.add("hidden");
+        document.getElementById("addressSectionLabel").style.display = "none";
+        document.getElementById("oemOtherWrap").style.display = "none";
+        updateNardaCalibrationRequirement();
+        updateProductModelField();
+
+        const submitBtn = document.getElementById("submitBtn");
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = "Submit Request";
+      }
+
       document
         .getElementById("submitBtn")
         .addEventListener("click", async function submitRequest() {
@@ -1320,6 +1374,7 @@
               : "";
 
             show(msg, "success");
+            resetForm();
             document
               .getElementById("formPanel")
               .scrollIntoView({ behavior: "smooth" });
@@ -1331,6 +1386,9 @@
         });
 
       function scrollToForm() {
+        resetForm();
+        document.getElementById("successBox").style.display = "none";
+        document.getElementById("errorBox").style.display = "none";
         document
           .getElementById("formPanel")
           .scrollIntoView({ behavior: "smooth" });

@@ -212,7 +212,7 @@ function requests_update(): never
         $body['status'] = $normalized;
     }
 
-    if ($decision !== '' && !in_array($decision, ['approved', 'disapproved', 'reset'], true)) {
+    if ($decision !== '' && !in_array($decision, ['approved', 'disapproved'], true)) {
         json_response(['message' => 'Invalid approval decision.'], 400);
     }
 
@@ -241,9 +241,6 @@ function requests_update(): never
         $updateData['approvalStatus'] = 'disapproved';
         $updateData['status'] = 'disapproved';
         $updateData['disapprovalReason'] = trim((string) ($body['disapprovalReason'] ?? ''));
-    } elseif ($decision === 'reset') {
-        $updateData['approvalStatus'] = '';
-        $updateData['disapprovalReason'] = '';
     }
 
     $movingToPending = ($updateData['status'] ?? $record['status']) === 'pending'
@@ -416,6 +413,9 @@ function requests_export_csv(): never
         ['Created At', fn ($r) => $val($r, 'createdAt')],
         ['Updated At', fn ($r) => $val($r, 'updatedAt')],
         ['Disapproval Reason', fn ($r) => $val($r, 'disapprovalReason')],
+        ['Company Name (Admin)', fn ($r) => $r['processingDetails']['ipCompanyName'] ?: '-'],
+        ['Location (Admin)', fn ($r) => $r['processingDetails']['ipLocation'] ?: '-'],
+        ['Module Serial Number (Admin)', fn ($r) => $r['processingDetails']['ipModuleSerialNumber'] ?: '-'],
     ];
 
     $headers = array_map(fn ($f) => $f[0], $baseFields);

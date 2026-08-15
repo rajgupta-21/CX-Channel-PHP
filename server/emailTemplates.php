@@ -355,7 +355,114 @@ function build_support_submission_email(array $request): array
     return build_html('Support Request Submission', $subject, $text, false, $bodyHtml);
 }
 
-function company_address_lines(): array
+function build_admin_support_submission_email(array $request): array
+{
+    $id = $request['id'] ?? '';
+    $subject = 'New Support Request - Ticket ID: ' . $id;
+
+    $text = implode("\n", [
+        'Hello Team,',
+        '',
+        'A new support request has been submitted.',
+        '',
+        'Ticket ID:',
+        $id,
+        '',
+        'Date of Submission:',
+        format_date($request['createdAt'] ?? ''),
+        '',
+        'OEM:',
+        ($request['oem'] ?? ''),
+        '',
+        'Service Type:',
+        ($request['serviceType'] ?? 'Support'),
+        '',
+        'CUSTOMER DETAILS',
+        '',
+        'Name:',
+        ($request['name'] ?? ''),
+        '',
+        'Contact Number:',
+        ($request['phone'] ?? ''),
+        '',
+        'Company Name:',
+        ($request['company'] ?? ''),
+        '',
+        'Designation:',
+        ($request['designation'] ?? ''),
+        '',
+        'Location:',
+        ($request['location'] ?? ''),
+        '',
+        'Email:',
+        ($request['email'] ?? ''),
+        '',
+        'Company Address:',
+        ($request['billingAddress'] ?? ''),
+        '',
+        'PRODUCT DETAILS',
+        '',
+        'Product Model:',
+        ($request['product'] ?? ''),
+        '',
+        'Software Version:',
+        ($request['softwareVersion'] ?? ''),
+        '',
+        'Other Product Information:',
+        implode(', ', array_values(array_filter([
+            $request['serialRfCable'] ?? '',
+            $request['serialBaseUnit'] ?? '',
+            $request['serialSingle'] ?? '',
+            $request['serialAntenna'] ?? '',
+        ]))) ?: '',
+        '',
+        'DESCRIPTION OF THE ISSUE',
+        '',
+        ($request['description'] ?? ''),
+        '',
+        'ADDITIONAL INFORMATION',
+        '',
+        ($request['additionalInfo'] ?? ''),
+        '',
+    ]);
+
+    $bodyHtml = '<p>Hello Team,</p>'
+        . '<p>A new support request has been submitted.</p>'
+        . h4('Request Details')
+        . grid_html([
+            field_cell('Ticket ID', $id),
+            field_cell('Date of Submission', format_date($request['createdAt'] ?? '')),
+            field_cell('OEM', $request['oem'] ?? ''),
+            field_cell('Service Type', $request['serviceType'] ?? 'Support'),
+        ])
+        . h4('Customer Details')
+        . grid_html([
+            field_cell('Name', $request['name'] ?? ''),
+            field_cell('Contact Number', $request['phone'] ?? ''),
+            field_cell('Company Name', $request['company'] ?? ''),
+            field_cell('Designation', $request['designation'] ?? ''),
+            field_cell('Location', $request['location'] ?? ''),
+            field_cell('Email', $request['email'] ?? ''),
+            field_cell('Company Address', $request['billingAddress'] ?? ''),
+        ])
+        . h4('Product Details')
+        . grid_html([
+            field_cell('Product Model', $request['product'] ?? ''),
+            field_cell('Software Version', $request['softwareVersion'] ?? ''),
+            field_cell('Other Product Information', implode(', ', array_values(array_filter([
+                $request['serialRfCable'] ?? '',
+                $request['serialBaseUnit'] ?? '',
+                $request['serialSingle'] ?? '',
+                $request['serialAntenna'] ?? '',
+            ])))),
+        ])
+        . h4('Description of the Issue')
+        . para($request['description'] ?? '')
+        . h4('Additional Information')
+        . para($request['additionalInfo'] ?? '');
+
+    return build_html('Support Request Submission', $subject, $text, false, $bodyHtml);
+}
 {
     return [
         ...COMPANY_INFO['addressLines'],
@@ -391,6 +498,8 @@ function build_approval_email(array $request, array $opts = []): array
         'Status Notes: ' . $statusNotes,
         'Description of the Issue:',
         ($request['description'] ?? ''),
+        'Additional Information:',
+        ($request['additionalInfo'] ?? ''),
         "Sender's Full Name: " . ($request['name'] ?? ''),
         "Sender's Contact No: " . ($request['phone'] ?? ''),
         "Sender's Company Name: " . ($request['company'] ?? ''),
@@ -414,6 +523,7 @@ function build_approval_email(array $request, array $opts = []): array
         field_row('OEM:', $request['oem'] ?? '', 'Type:', $request['serviceType'] ?? ''),
         field_row('Status:', 'Approved', 'Status Notes:', $statusNotes),
         field_row_full('Description of the Issue:', $request['description'] ?? ''),
+        field_row_full('Additional Information:', $request['additionalInfo'] ?? ''),
         field_row("Sender's Full Name:", $request['name'] ?? ''),
         field_row("Sender's Contact No:", $request['phone'] ?? '', "Sender's Company Name:", $request['company'] ?? ''),
         field_row("Sender's Designation:", $request['designation'] ?? '', "Sender's Location:", $request['location'] ?? ''),

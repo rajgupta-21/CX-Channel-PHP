@@ -125,6 +125,9 @@ const IP_FIELDS = [
     'ipAckDateFromWh',
     'ipCourierName',
     'ipRemark',
+    'ipCompanyName',
+    'ipLocation',
+    'ipModuleSerialNumber',
 ];
 
 function reconstruct_processing_details(array $row): array

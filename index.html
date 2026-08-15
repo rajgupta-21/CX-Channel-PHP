@@ -1137,7 +1137,7 @@
         sortKey = "createdAt",
         sortDir = -1,
         page = 1;
-      const PAGE_SIZE = 20;
+      const PAGE_SIZE = 10;
 
       const af = {
         keyword: "",
@@ -1192,6 +1192,32 @@
         return record.rmaNumber
           ? String(record.rmaNumber).replace(/^(?:T-|RMA-)/i, "")
           : "—";
+      }
+
+      // Normalizes any stored date format to DD/MM/YYYY:
+      //   "24/05/2026, 19:41:42"  -> "24/05/2026"
+      //   "2026-05-24"            -> "24/05/2026"  (ISO from <input type="date">)
+      //   "24-05-2026"            -> "24/05/2026"
+      function fmtDate(value) {
+        const s = String(value || "").trim();
+        if (!s) return "-";
+        let m;
+        if ((m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/))) {
+          return (
+            m[1].padStart(2, "0") + "/" + m[2].padStart(2, "0") + "/" + m[3]
+          );
+        }
+        if ((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) {
+          return (
+            m[3].padStart(2, "0") + "/" + m[2].padStart(2, "0") + "/" + m[1]
+          );
+        }
+        if ((m = s.match(/^(\d{1,2})-(\d{1,2})-(\d{4})/))) {
+          return (
+            m[1].padStart(2, "0") + "/" + m[2].padStart(2, "0") + "/" + m[3]
+          );
+        }
+        return s;
       }
 
       function fmtStatus(s) {
@@ -1470,8 +1496,8 @@
             <strong>${esc(displayRma(r))}</strong>
           </button>
         </td>
-        <td style="font-size:12px;color:var(--muted);white-space:nowrap;">${esc(String(r.rmaIssuedAt || "").split(", ")[0] || "-")}</td>
-        <td style="font-size:12px;color:var(--muted);white-space:nowrap;">${esc(r.processingDetails?.ipReceivedDate || "-")}</td>
+        <td style="font-size:12px;color:var(--muted);white-space:nowrap;">${esc(fmtDate(r.rmaIssuedAt))}</td>
+        <td style="font-size:12px;color:var(--muted);white-space:nowrap;">${esc(fmtDate(r.processingDetails?.ipReceivedDate))}</td>
         <td>${esc(r.processingDetails?.ipPoNoAndDate || "")}</td>
         <td>${esc(r.oem || "-")}</td>
         <td>${esc(r.serviceType || "-")}</td>
@@ -1518,7 +1544,7 @@
 
       function goPage(p) {
         const total = Math.ceil(filtered.length / PAGE_SIZE) || 1;
-        page = Math.max(1, Math.mhow in (p, total));
+        page = Math.max(1, Math.min(p, total));
         renderTable();
       }
 
@@ -1723,12 +1749,26 @@
             <button class="btn btn-reject" onclick="openDisapproveDialog()">✕ Disapprove Request</button>
           </div>
           <div class="approval-status-note" id="approvalStatusNote" style="display:none"></div>
-          <button class="btn btn-ghost btn-sm" id="approvalUndoBtn" style="display:none;margin-top:10px" onclick="undoApprovalDecision()">Undo decision</button>
         </div>
 
       <div class="detail-section" style="margin-bottom:14px;">
         <div class="detail-section-title">Internal Processing Details</div>
         <div class="detail-grid">
+
+          <div class="field">
+            <label>Company Name</label>
+            <input type="text" id="ipCompanyName" placeholder="Company name" />
+          </div>
+
+          <div class="field">
+            <label>Location</label>
+            <input type="text" id="ipLocation" placeholder="Location" />
+          </div>
+
+          <div class="field">
+            <label>Module Serial Number</label>
+            <input type="text" id="ipModuleSerialNumber" placeholder="Module serial number" />
+          </div>
 
           <div class="field">
             <label>Received Date</label>
@@ -1911,7 +1951,6 @@
       function updateApprovalStatusNote(approvalStatus, mailStatus) {
         const note = document.getElementById("approvalStatusNote");
         const actions = document.getElementById("approvalActions");
-        const undoBtn = document.getElementById("approvalUndoBtn");
         const s = String(approvalStatus || "").toLowerCase();
 
         if (s === "approved") {
@@ -1922,7 +1961,6 @@
               : `Approved. RMA ${displayRma(currentRequest)} assigned. The customer was notified by email.`;
           note.style.display = "";
           actions.style.display = "none";
-          undoBtn.style.display = "";
         } else if (s === "disapproved") {
           note.className = "approval-status-note is-rejected";
           note.textContent =
@@ -1931,11 +1969,9 @@
               : "Disapproved. The customer was notified by email.";
           note.style.display = "";
           actions.style.display = "none";
-          undoBtn.style.display = "";
         } else {
           note.style.display = "none";
           actions.style.display = "";
-          undoBtn.style.display = "none";
         }
       }
 
@@ -2013,8 +2049,6 @@
         const restoreBtn = () => {
           if (loadingBtnId === "approveBtn")
             setBtnLoading("approveBtn", false, "✓ Approve Request");
-          else if (loadingBtnId === "approvalUndoBtn")
-            setBtnLoading("approvalUndoBtn", false, "Undo decision");
           else setBtnLoading(loadingBtnId, false, "Disapprove Request");
         };
         setBtnLoading(loadingBtnId, true, "", "Processing…");
@@ -2055,17 +2089,6 @@
           alert(err.message || "Could not update this request.");
           return false;
         }
-      }
-
-      async function undoApprovalDecision() {
-        if (!currentRequest) return;
-        if (
-          !confirm(
-            `Undo the approval/disapproval decision for ${shortId(currentRequest.id)}? This will not email the customer.`,
-          )
-        )
-          return;
-        await applyApprovalDecision("reset", "", "approvalUndoBtn");
       }
 
       async function saveUpdate() {
@@ -2121,6 +2144,9 @@
       }
 
       const internalFields = [
+        "ipCompanyName",
+        "ipLocation",
+        "ipModuleSerialNumber",
         "ipAdminNote",
         "ipReceivedDate",
         "ipDateOfInvestigation",

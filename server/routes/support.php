@@ -73,14 +73,14 @@ function support_create(): never
     $stmt = $pdo->prepare(
         'INSERT INTO support (
             id, rma_number, subject, priority, oem, service_type, product, description, name, email,
-            phone, company, designation, software_version, serial_single, serial_base_unit, serial_rf_cable,
+            phone, company, designation, location, software_version, serial_single, serial_base_unit, serial_rf_cable,
             serial_antenna, billing_address, return_address, cal_certificate_address, additional_info,
             status, assigned_team, assigned_name, approval_status, customer_mail_status, disapproval_reason,
             internal_note, customer_feedback, pending_for_customer, pending_for_fastech, pending_for_oem,
             created_at, updated_at
         ) VALUES (
             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-            ?, ?, ?, ?
+            ?, ?, ?, ?, ?
         )',
     );
 
@@ -98,6 +98,7 @@ function support_create(): never
         (string) ($body['phone'] ?? ''),
         (string) ($body['company'] ?? ''),
         (string) ($body['designation'] ?? ''),
+        (string) ($body['location'] ?? ''),
         (string) ($body['softwareVersion'] ?? ''),
         (string) ($body['serialSingle'] ?? ''),
         (string) ($body['serialBaseUnit'] ?? ''),
@@ -128,20 +129,12 @@ function support_create(): never
     $teamEmail = env('TEAM_EMAIL');
 
     try {
+        $mail = build_admin_support_submission_email($record);
         send_mail([
             'to'      => $teamEmail,
-            'subject' => 'New Support Request (' . $record['id'] . ')',
-            'text'    => 'New support request from ' . $record['name'] . ' (' . $record['email'] . '). Priority: ' . $record['priority'] . '.',
-            'html'    => '<h3>New Support Request</h3>'
-                . '<p><strong>Submission Reference:</strong> ' . $record['id'] . '</p>'
-                . '<p><strong>Priority:</strong> ' . $record['priority'] . '</p>'
-                . '<p><strong>Name:</strong> ' . $record['name'] . '</p>'
-                . '<p><strong>Email:</strong> ' . $record['email'] . '</p>'
-                . '<p><strong>Phone:</strong> ' . ($record['phone'] ?: "\u{2014}") . '</p>'
-                . '<p><strong>Company:</strong> ' . ($record['company'] ?: "\u{2014}") . '</p>'
-                . '<p><strong>OEM:</strong> ' . $record['oem'] . '</p>'
-                . '<p><strong>Product:</strong> ' . $record['product'] . '</p>'
-                . '<p><strong>Software Version:</strong> ' . ($record['softwareVersion'] ?: "\u{2014}") . '</p>',
+            'subject' => $mail['subject'],
+            'text'    => $mail['text'],
+            'html'    => $mail['html'],
             'replyTo' => $record['email'],
         ]);
         $emails['team']['sent'] = true;
@@ -318,14 +311,15 @@ function support_export_csv(): never
     }
 
     $viewKeys = [
-        'id', 'name', 'oem', 'product', 'softwareVersion', 'description', 'email', 'phone', 'company',
-        'designation', 'additionalInfo', 'priority', 'status', 'assignedTeam', 'assignedName',
+        'id', 'name', 'oem', 'product', 'serialSingle', 'softwareVersion', 'description', 'email', 'phone',
+        'company', 'location', 'designation', 'additionalInfo', 'status', 'assignedTeam', 'assignedName',
         'internalNote', 'customerFeedback', 'createdAt', 'updatedAt',
     ];
 
     $heading = function ($key) {
         if ($key === 'assignedTeam') return 'Assigned To Team';
         if ($key === 'assignedName') return 'Assigned to person';
+        if ($key === 'serialSingle') return 'Module S/N';
         return ucfirst((string) preg_replace('/([A-Z])/', ' $1', $key));
     };
 

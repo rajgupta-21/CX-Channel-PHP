@@ -504,6 +504,37 @@
         text-align: center;
         color: var(--muted);
       }
+      .table-info {
+        padding: 10px 18px 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .pagination {
+        display: flex;
+        justify-content: flex-end;
+        gap: 6px;
+        padding: 12px 18px 18px;
+        flex-wrap: wrap;
+      }
+      .page-btn {
+        height: 34px;
+        min-width: 34px;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        background: #fff;
+        color: var(--text);
+        padding: 0 10px;
+        font-weight: 700;
+      }
+      .page-btn.active {
+        background: var(--primary);
+        color: #fff;
+        border-color: var(--primary);
+      }
+      .page-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
       .pill {
         display: inline-flex;
         align-items: center;
@@ -531,18 +562,6 @@
       .pill-closed {
         background: #e2e8f0;
         color: #444;
-      }
-      .pill-priority-high {
-        background: #fee2e2;
-        color: #b91c1c;
-      }
-      .pill-priority-medium {
-        background: #fef3c7;
-        color: #92400e;
-      }
-      .pill-priority-low {
-        background: #e0f2fe;
-        color: #00538F;
       }
       .link-btn {
         background: none;
@@ -867,7 +886,7 @@
                   id="searchInput"
                   type="text"
                   placeholder="ID, name, email, OEM, description…"
-                  oninput="renderTable()"
+                  oninput="onFilterChange()"
                 />
               </div>
               <div class="field">
@@ -876,17 +895,8 @@
                   id="oemFilter"
                   type="text"
                   placeholder="Filter by OEM"
-                  oninput="renderTable()"
+                  oninput="onFilterChange()"
                 />
-              </div>
-              <div class="field">
-                <label for="priorityFilter">Priority</label>
-                <select id="priorityFilter" onchange="renderTable()">
-                  <option value="">All</option>
-                  <option>High</option>
-                  <option>Medium</option>
-                  <option>Low</option>
-                </select>
               </div>
               <div class="filter-actions">
                 <button
@@ -908,20 +918,21 @@
                     <th>Customer</th>
                     <th>OEM / Product</th>
                     <th>Description</th>
-                    <th>Priority</th>
                     <th>Status</th>
                     <th>Pending From</th>
                   </tr>
                 </thead>
                 <tbody id="supportTbody">
                   <tr>
-                    <td colspan="8" class="td-empty">
+                    <td colspan="7" class="td-empty">
                       Loading support tickets…
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
+            <div class="table-info" id="supportTableInfo"></div>
+            <div class="pagination" id="supportPagination"></div>
           </section>
         </div>
       </main>
@@ -960,6 +971,9 @@
       let allSupport = [];
       let currentDetail = null;
       let statusFilter = "All";
+      let filteredSupport = [];
+      let page = 1;
+      const PAGE_SIZE = 10;
 
       function esc(v) {
         return String(v == null ? "" : v)
@@ -990,16 +1004,6 @@
         if (s === "open") return "pill pill-open";
         if (s === "closed") return "pill pill-closed";
         return "pill pill-open";
-      }
-
-      function priorityPillClass(p) {
-        const v = norm(p);
-
-        if (v === "high") return "pill pill-priority-high";
-        if (v === "medium") return "pill pill-priority-medium";
-        if (v === "low") return "pill pill-priority-low";
-
-        return "pill pill-priority-medium";
       }
 
       function ensureAuth() {
@@ -1051,7 +1055,7 @@
       async function loadSupport() {
         const tbody = document.getElementById("supportTbody");
         tbody.innerHTML =
-          '<tr><td colspan="8" class="td-empty">Loading support tickets…</td></tr>';
+          '<tr><td colspan="7" class="td-empty">Loading support tickets…</td></tr>';
         try {
           const res = await fetch(API + "/api/support");
           if (!res.ok) throw new Error("Failed to fetch");
@@ -1060,7 +1064,7 @@
           renderTable();
         } catch (err) {
           tbody.innerHTML =
-            '<tr><td colspan="8" class="td-empty">Failed to load support tickets.</td></tr>';
+            '<tr><td colspan="7" class="td-empty">Failed to load support tickets.</td></tr>';
         }
       }
 
@@ -1105,17 +1109,18 @@
           b.classList.remove("active");
         });
         if (btn) btn.classList.add("active");
+        page = 1;
         renderTable();
       }
 
       function resetFilters() {
         document.getElementById("searchInput").value = "";
         document.getElementById("oemFilter").value = "";
-        document.getElementById("priorityFilter").value = "";
         statusFilter = "All";
         document.querySelectorAll(".tab-btn").forEach(function (b, i) {
           b.classList.toggle("active", i === 0);
         });
+        page = 1;
         renderTable();
       }
 
@@ -1127,7 +1132,6 @@
         const oemQ = String(document.getElementById("oemFilter").value || "")
           .toLowerCase()
           .trim();
-        const prio = document.getElementById("priorityFilter").value;
 
         let rows = allSupport;
         if (statusFilter !== "All")
@@ -1156,20 +1160,39 @@
               .toLowerCase()
               .includes(oemQ);
           });
-        if (prio)
-          rows = rows.filter(function (r) {
-            return r.priority === prio;
-          });
 
-        if (!rows.length) {
+        filteredSupport = rows;
+
+        const info = document.getElementById("supportTableInfo");
+        const total = Math.ceil(filteredSupport.length / PAGE_SIZE) || 1;
+        if (page > total) page = total;
+        if (page < 1) page = 1;
+        const start = (page - 1) * PAGE_SIZE;
+        const end = start + PAGE_SIZE;
+        const pageRows = filteredSupport.slice(start, end);
+
+        if (info)
+          info.textContent = filteredSupport.length
+            ? "Showing " +
+              (start + 1) +
+              "–" +
+              Math.min(end, filteredSupport.length) +
+              " of " +
+              filteredSupport.length +
+              " ticket" +
+              (filteredSupport.length !== 1 ? "s" : "")
+            : "";
+
+        if (!pageRows.length) {
           tbody.innerHTML =
-            '<tr><td colspan="8" class="td-empty">No support tickets match your filters.</td></tr>';
+            '<tr><td colspan="7" class="td-empty">No support tickets match your filters.</td></tr>';
+          renderPagination();
           return;
         }
 
         let html = "";
-        for (let i = 0; i < rows.length; i++) {
-          const r = rows[i];
+        for (let i = 0; i < pageRows.length; i++) {
+          const r = pageRows[i];
           html +=
             "<tr>" +
             '<td><button class="link-btn" onclick="openDetail(\'' +
@@ -1194,11 +1217,6 @@
             esc(r.description || "—") +
             "</td>" +
             '<td><span class="' +
-            priorityPillClass(r.priority) +
-            '">' +
-            esc(r.priority || "Medium") +
-            "</span></td>" +
-            '<td><span class="' +
             statusPillClass(r.status) +
             '">' +
             esc(r.status || "Open") +
@@ -1217,6 +1235,56 @@
             "</tr>";
         }
         tbody.innerHTML = html;
+        renderPagination();
+      }
+
+      function renderPagination() {
+        const pg = document.getElementById("supportPagination");
+        if (!pg) return;
+        const total = Math.ceil(filteredSupport.length / PAGE_SIZE) || 1;
+        let html = "";
+
+        html +=
+          '<button class="page-btn" onclick="goPage(' +
+          (page - 1) +
+          ')" ' +
+          (page <= 1 ? "disabled" : "") +
+          ">‹</button>";
+
+        for (let i = 1; i <= total; i++) {
+          if (total > 7 && Math.abs(i - page) > 2 && i !== 1 && i !== total) {
+            if (i === page - 3 || i === page + 3)
+              html += '<span class="page-btn" style="cursor:default;">…</span>';
+            continue;
+          }
+          html +=
+            '<button class="page-btn' +
+            (i === page ? " active" : "") +
+            '" onclick="goPage(' +
+            i +
+            ')">' +
+            i +
+            "</button>";
+        }
+
+        html +=
+          '<button class="page-btn" onclick="goPage(' +
+          (page + 1) +
+          ')" ' +
+          (page >= total ? "disabled" : "") +
+          ">›</button>";
+        pg.innerHTML = html;
+      }
+
+      function goPage(p) {
+        const total = Math.ceil(filteredSupport.length / PAGE_SIZE) || 1;
+        page = Math.max(1, Math.min(p, total));
+        renderTable();
+      }
+
+      function onFilterChange() {
+        page = 1;
+        renderTable();
       }
 
       function openDetail(id) {
@@ -1312,20 +1380,6 @@
           "</select></div>" +
           "</div>" +
           '<div class="detail-item">' +
-          '<div class="d-label">Priority</div>' +
-          '<div class="field"><select id="editPriority">' +
-          "<option" +
-          (record.priority === "High" ? " selected" : "") +
-          ">High</option>" +
-          "<option" +
-          (record.priority === "Medium" ? " selected" : "") +
-          ">Medium</option>" +
-          "<option" +
-          (record.priority === "Low" ? " selected" : "") +
-          ">Low</option>" +
-          "</select></div>" +
-          "</div>" +
-          '<div class="detail-item">' +
           '<div class="d-label">Pending From</div>' +
           '<div class="field"><select id="editPendingFrom">' +
           '<option value="">— None —</option>' +
@@ -1408,10 +1462,6 @@
         const pendingFrom = document.getElementById("editPendingFrom").value;
         const formData = new FormData();
         formData.append("status", document.getElementById("editStatus").value);
-        formData.append(
-          "priority",
-          document.getElementById("editPriority").value,
-        );
         formData.append(
           "assignedTeam",
           document.getElementById("editAssignedTeam").value,
