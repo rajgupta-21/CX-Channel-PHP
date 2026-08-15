@@ -1,17 +1,48 @@
 # Apache configuration for cPanel / shared hosting.
-
-# Mirrors the PHP built-in server router (router.php) for Apache.
-# Works in BOTH a subfolder (e.g. /public_html/CX-Channel-PHP) and the
-# document root -- per-directory rules are matched relative to this file.
+# Application is deployed under /CX-Channel-PHP
 
 RewriteEngine On
 
-# API, auth and upload routes go to PHP front controller
+# ---------------------------------------------------------------
+# API, auth and upload routes
+# ---------------------------------------------------------------
+# These requests are handled by the PHP front controller.
+#
+# /CX-Channel-PHP/api/...
+# /CX-Channel-PHP/auth/...
+# /CX-Channel-PHP/uploads/...
+#
+# are internally routed to:
+#
+# server/index.php
+# ---------------------------------------------------------------
+
 RewriteRule ^(api|auth|uploads)(/.*)?$ server/index.php [L,QSA]
 
-# Existing files and directories are served normally
+
+# ---------------------------------------------------------------
+# Existing files and directories
+# ---------------------------------------------------------------
+# Let Apache serve files that actually exist.
+# Examples:
+#
+# index.html
+# login.html
+# script.js
+# style.css
+# uploads/...
+#
+# ---------------------------------------------------------------
+
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# Everything else goes to landing page
+
+# ---------------------------------------------------------------
+# Everything else
+# ---------------------------------------------------------------
+# Send unknown frontend routes to landing.html
+# ---------------------------------------------------------------
+
+RewriteRule ^ landing.html [L]
