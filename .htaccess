@@ -4,45 +4,28 @@
 RewriteEngine On
 
 # ---------------------------------------------------------------
-# API, auth and upload routes
+# Serve uploaded files directly
+# URL:
+# /CX-Channel-PHP/uploads/file.jpg
+#
+# Physical:
+# /CX-Channel-PHP/server/uploads/file.jpg
 # ---------------------------------------------------------------
-# These requests are handled by the PHP front controller.
-#
-# /CX-Channel-PHP/api/...
-# /CX-Channel-PHP/auth/...
-# /CX-Channel-PHP/uploads/...
-#
-# are internally routed to:
-#
-# server/index.php
-# ---------------------------------------------------------------
-
-RewriteRule ^(api|auth|uploads)(/.*)?$ server/index.php [L,QSA]
-
+RewriteRule ^uploads/(.*)$ server/uploads/$1 [L]
 
 # ---------------------------------------------------------------
-# Existing files and directories
+# API routes
 # ---------------------------------------------------------------
-# Let Apache serve files that actually exist.
-# Examples:
-#
-# index.html
-# login.html
-# script.js
-# style.css
-# uploads/...
-#
-# ---------------------------------------------------------------
+RewriteRule ^(api|auth)(/.*)?$ server/index.php [L,QSA]
 
+# ---------------------------------------------------------------
+# Existing files/directories
+# ---------------------------------------------------------------
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-
 # ---------------------------------------------------------------
-# Everything else
+# Everything else -> landing page
 # ---------------------------------------------------------------
-# Send unknown frontend routes to landing.html
-# ---------------------------------------------------------------
-
 RewriteRule ^ landing.html [L]
