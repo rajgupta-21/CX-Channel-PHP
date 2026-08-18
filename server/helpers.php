@@ -36,8 +36,7 @@ function generate_support_ticket_id(): string
 {
     $pdo = db();
     $dt = new DateTimeImmutable('now', new DateTimeZone('Asia/Kolkata'));
-    $y = substr($dt->format('Y'), -2);
-    $prefix = $y . $dt->format('mdHis');
+    $prefix = $dt->format('ymd');
 
     $rows = $pdo->query('SELECT id FROM support')->fetchAll(PDO::FETCH_COLUMN);
     $maxSeq = 0;

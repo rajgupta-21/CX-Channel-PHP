@@ -37,6 +37,21 @@ require_once __DIR__ . '/routes/support.php';
 
 /*
 |--------------------------------------------------------------------------
+| Global exception handler
+|--------------------------------------------------------------------------
+|
+| Returns a JSON error body instead of an empty response so frontend
+| `.json()` calls never throw "Unexpected end of JSON input".
+|--------------------------------------------------------------------------
+*/
+
+set_exception_handler(function (Throwable $e) {
+    json_error($e->getMessage(), 500);
+});
+
+
+/*
+|--------------------------------------------------------------------------
 | PHP error display
 |--------------------------------------------------------------------------
 |

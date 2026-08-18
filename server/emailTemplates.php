@@ -575,3 +575,36 @@ function build_disapproval_email(array $request, array $opts = []): array
     ]);
     return build_message($subject, $text, false);
 }
+
+function build_rma_suggestion_email(array $request, array $opts = []): array
+{
+    $id = $request['id'] ?? '';
+    $name = $request['name'] ?? '';
+    $note = trim((string) ($opts['adminNote'] ?? ''));
+    $portalUrl = (string) ($opts['portalUrl'] ?? '');
+    $subject = 'Your Support Ticket Has Not Been Resolved - Please Raise an RMA';
+
+    $text = implode("\n", [
+        'Hi ' . $name . ',',
+        '',
+        'Your support ticket with ID: ' . $id . ' has not been resolved.',
+        '',
+        'For further investigation, please generate online RMA for the unit using the below link and send the unit to our Navi Mumbai service center.',
+        'Link: ' . $portalUrl,
+    ]);
+    if ($note !== '') {
+        $text .= "\n\n" . 'Note from our support team:' . "\n" . $note;
+    }
+    $text .= "\n\n" . 'Service@fastech-india.com' . "\n" . '+91 98679 50611';
+
+    $bodyHtml = '<p>Hi ' . esc_hl($name) . ',</p>'
+        . '<p>Your support ticket with ID: <strong>' . esc_hl($id) . '</strong> has not been resolved.</p>'
+        . '<p>For further investigation, please generate online RMA for the unit using the below link and send the unit to our Navi Mumbai service center.</p>'
+        . '<p><a href="' . esc_hl($portalUrl) . '">' . esc_hl($portalUrl) . '</a></p>';
+    if ($note !== '') {
+        $bodyHtml .= h4('Note from our support team') . para($note);
+    }
+    $bodyHtml .= '<p>Service@fastech-india.com<br/>+91 98679 50611</p>';
+
+    return build_html('RMA Suggestion', $subject, $text, false, $bodyHtml);
+}

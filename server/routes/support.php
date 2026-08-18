@@ -205,7 +205,7 @@ function support_update(): never
         }
     }
 
-    if ($decision !== '' && !in_array($decision, ['ticketclosed', 'reset'], true)) {
+    if ($decision !== '' && !in_array($decision, ['ticketclosed', 'reset', 'suggestrma'], true)) {
         json_response(['message' => 'Invalid approval decision.'], 400);
     }
 
@@ -259,6 +259,38 @@ function support_update(): never
                     . '<p>Your support ticket <strong>' . escape_html($ticketRef) . '</strong> has been successfully resolved and closed.</p>'
                     . '<p>If you need any further help, please reach out to us.</p>'
                     . '<p>Service@fastech-india.com<br/>8693888676</p>',
+                'cc'      => env('CC_EMAIL'),
+            ]);
+            $customerMail['sent'] = true;
+            $stmt = $pdo->prepare('UPDATE support SET customer_mail_status = ? WHERE id = ?');
+            $stmt->execute(['sent', $id]);
+            $record['customerMailStatus'] = 'sent';
+        } catch (Throwable $mailErr) {
+            $customerMail['error'] = $mailErr->getMessage();
+            $stmt = $pdo->prepare('UPDATE support SET customer_mail_status = ? WHERE id = ?');
+            $stmt->execute(['failed', $id]);
+            $record['customerMailStatus'] = 'failed';
+        }
+    } elseif ($decision === 'suggestrma' && $email === '') {
+        $customerMail['error'] = 'Customer email is missing.';
+        $stmt = $pdo->prepare('UPDATE support SET customer_mail_status = ? WHERE id = ?');
+        $stmt->execute(['failed', $id]);
+        $record['customerMailStatus'] = 'failed';
+    } elseif ($decision === 'suggestrma' && $email !== '') {
+        $ticketRef = $record['id'] ?? '';
+        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $host = (string) ($_SERVER['HTTP_HOST'] ?? 'new.fastech-india.com');
+        $portalUrl = $scheme . '://' . $host . APP_BASE_PATH . '/customer.html';
+        try {
+            $mail = build_rma_suggestion_email($record, [
+                'adminNote' => (string) ($body['rmaNote'] ?? ''),
+                'portalUrl' => $portalUrl,
+            ]);
+            send_mail([
+                'to'      => $email,
+                'subject' => $mail['subject'],
+                'text'    => $mail['text'],
+                'html'    => $mail['html'],
                 'cc'      => env('CC_EMAIL'),
             ]);
             $customerMail['sent'] = true;

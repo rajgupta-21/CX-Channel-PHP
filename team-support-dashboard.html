@@ -416,6 +416,12 @@
         border-radius: 12px;
         background: #ffffff;
       }
+      .approval-hint {
+        color: #709ec0;
+        font-size: 13px;
+        margin-bottom: 14px;
+        line-height: 1.5;
+      }
       .approval-actions {
         display: flex;
         gap: 10px;
@@ -960,6 +966,44 @@
 
     <div class="toast" id="toast"></div>
 
+    <div class="modal-overlay" id="rmaSuggestionOverlay" style="z-index: 110">
+      <div class="modal" style="width: min(520px, 100%)">
+        <div class="modal-head">
+          <h3>Issue of an RMA</h3>
+          <button class="btn btn-ghost" onclick="closeRmaSuggestionDialog()">
+            Close
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="approval-hint">
+            Suggest the customer to raise an online RMA request for this
+            unresolved support ticket. Your note will be emailed to the
+            customer along with the RMA link.
+          </p>
+          <div class="field full">
+            <label>Admin Note</label>
+            <textarea
+              id="rmaSuggestionNote"
+              required
+              placeholder="Enter the note to be sent to the customer"
+            ></textarea>
+          </div>
+          <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeRmaSuggestionDialog()">
+              Cancel
+            </button>
+            <button
+              class="btn btn-disapprove"
+              id="confirmRmaSuggestionBtn"
+              onclick="confirmRmaSuggestion()"
+            >
+              Issue of an RMA
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script>
       const API =
         window.location.origin +
@@ -1465,13 +1509,14 @@
           "</div>" +
           '<div class="approval-section">' +
           '<div class="detail-section-title">Ticket Actions</div>' +
-          '<p class="td-sub">Click below to close this support ticket and notify the customer by email.</p>' +
+          '<p class="td-sub">Close the ticket to notify the customer by email, or suggest the customer raise an RMA for this unresolved support request.</p>' +
           '<div class="approval-actions">' +
           '<button class="btn btn-primary" id="ticketClosedBtn" type="button"' +
           (record.status === "Closed" ? " disabled" : "") +
           ">" +
           (record.status === "Closed" ? "✓ Ticket Closed" : "Close Ticket") +
           "</button>" +
+          '<button class="btn btn-disapprove" id="suggestRmaBtn" type="button">Issue of an RMA</button>' +
           "</div>" +
           (record.status === "Closed"
             ? '<div class="approval-status-note approved">' +
@@ -1487,6 +1532,9 @@
         document
           .getElementById("ticketClosedBtn")
           .addEventListener("click", closeTicket);
+        document
+          .getElementById("suggestRmaBtn")
+          .addEventListener("click", openRmaSuggestionDialog);
         document.getElementById("detailModal").classList.add("open");
       }
 
@@ -1599,6 +1647,57 @@
         } catch (err) {
           setBtnLoading("ticketClosedBtn", false, "Close Ticket");
           showToast("Failed to update: " + err.message, "error");
+        }
+      }
+
+      function openRmaSuggestionDialog() {
+        if (!currentDetail) return;
+        document.getElementById("rmaSuggestionNote").value = "";
+        document.getElementById("rmaSuggestionOverlay").classList.add("open");
+      }
+
+      function closeRmaSuggestionDialog() {
+        document.getElementById("rmaSuggestionOverlay").classList.remove("open");
+      }
+
+      async function confirmRmaSuggestion() {
+        if (!currentDetail) return;
+        const note = document.getElementById("rmaSuggestionNote").value.trim();
+        if (!note) {
+          showToast("Please enter an admin note.", "error");
+          return;
+        }
+        setBtnLoading(
+          "confirmRmaSuggestionBtn",
+          true,
+          "Issue of an RMA",
+          "Sending…",
+        );
+        try {
+          const res = await fetch(
+            API + "/api/support/" + encodeURIComponent(currentDetail.id),
+            {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                approvalDecision: "suggestrma",
+                rmaNote: note,
+              }),
+            },
+          );
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.message || "Update failed");
+          closeRmaSuggestionDialog();
+          showToast(
+            data.emails?.customer?.error
+              ? "Failed to Mail the customer."
+              : "RMA suggestion emailed to the customer.",
+            data.emails?.customer?.error ? "error" : "success",
+          );
+          loadSupport();
+        } catch (err) {
+          setBtnLoading("confirmRmaSuggestionBtn", false, "Issue of an RMA");
+          showToast("Failed to send: " + err.message, "error");
         }
       }
 

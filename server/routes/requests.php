@@ -415,7 +415,7 @@ function requests_export_csv(): never
         ['Disapproval Reason', fn ($r) => $val($r, 'disapprovalReason')],
         ['Company Name (Admin)', fn ($r) => $r['processingDetails']['ipCompanyName'] ?: '-'],
         ['Location (Admin)', fn ($r) => $r['processingDetails']['ipLocation'] ?: '-'],
-        ['Module Serial Number (Admin)', fn ($r) => $r['processingDetails']['ipModuleSerialNumber'] ?: '-'],
+        ['Model Number (Admin)', fn ($r) => $r['processingDetails']['ipModuleSerialNumber'] ?: '-'],
     ];
 
     $headers = array_map(fn ($f) => $f[0], $baseFields);
