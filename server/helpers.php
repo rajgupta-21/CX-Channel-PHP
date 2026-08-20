@@ -127,6 +127,7 @@ const IP_FIELDS = [
     'ipCompanyName',
     'ipLocation',
     'ipModuleSerialNumber',
+    'ipSupportRequest',
 ];
 
 function reconstruct_processing_details(array $row): array

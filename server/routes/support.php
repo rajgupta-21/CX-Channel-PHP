@@ -40,6 +40,7 @@ function support_stats(): never
         'total'             => count($support),
         'open'              => $count('open'),
         'closed'            => $count('closed'),
+        'rma'               => $count('rma'),
         'pendingFromCustomer' => count(array_filter($support, fn ($r) => is_pending_flag($r['pending_for_customer']))),
         'pendingFromFastech'  => count(array_filter($support, fn ($r) => is_pending_flag($r['pending_for_fastech']))),
         'pendingFromOem'      => count(array_filter($support, fn ($r) => is_pending_flag($r['pending_for_oem']))),
@@ -199,7 +200,7 @@ function support_update(): never
     $decision = strtolower((string) ($body['approvalDecision'] ?? ''));
 
     if (array_key_exists('status', $body)) {
-        $allowedStatuses = ['Open', 'Closed'];
+        $allowedStatuses = ['Open', 'Closed', 'RMA'];
         if (!in_array($body['status'], $allowedStatuses, true)) {
             json_response(['message' => 'Invalid status. Allowed: ' . implode(', ', $allowedStatuses) . '.'], 400);
         }
@@ -218,6 +219,10 @@ function support_update(): never
 
     if ($decision === 'ticketclosed') {
         $updateData['status'] = 'Closed';
+        $updateData['approvalStatus'] = '';
+        $updateData['disapprovalReason'] = '';
+    } elseif ($decision === 'suggestrma') {
+        $updateData['status'] = 'RMA';
         $updateData['approvalStatus'] = '';
         $updateData['disapprovalReason'] = '';
     } elseif ($decision === 'reset') {

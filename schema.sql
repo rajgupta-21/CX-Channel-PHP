@@ -82,6 +82,7 @@ CREATE TABLE `requests` (
     `ip_company_name` VARCHAR(191) NOT NULL DEFAULT '',
     `ip_location` VARCHAR(191) NOT NULL DEFAULT '',
     `ip_module_serial_number` VARCHAR(191) NOT NULL DEFAULT '',
+    `ip_support_request` VARCHAR(191) NOT NULL DEFAULT '',
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

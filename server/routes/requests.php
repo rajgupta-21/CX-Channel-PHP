@@ -416,6 +416,7 @@ function requests_export_csv(): never
         ['Company Name (Admin)', fn ($r) => $r['processingDetails']['ipCompanyName'] ?: '-'],
         ['Location (Admin)', fn ($r) => $r['processingDetails']['ipLocation'] ?: '-'],
         ['Model Number (Admin)', fn ($r) => $r['processingDetails']['ipModuleSerialNumber'] ?: '-'],
+        ['Support request if any', fn ($r) => $r['processingDetails']['ipSupportRequest'] ?: '-'],
     ];
 
     $headers = array_map(fn ($f) => $f[0], $baseFields);

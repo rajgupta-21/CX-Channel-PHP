@@ -1418,7 +1418,7 @@
             return false;
           if (
             af.receivedDate &&
-            !String(r.processingDetails?.ipReceivedDate || "")
+            !String(fmtDate(r.processingDetails?.ipReceivedDate) || "")
               .toLowerCase()
               .includes(af.receivedDate)
           )
@@ -1706,6 +1706,10 @@
         <div class="detail-section-title">Serial Numbers</div>
         <div class="detail-grid">
           <div class="detail-item">
+            <div class="d-label">Serial Number</div>
+            <div class="d-value">${esc(cr.serialSingle || "-")}</div>
+          </div>
+          <div class="detail-item">
             <div class="d-label">Base Unit S-Number</div>
             <div class="d-value">${esc(cr.serialBaseUnit || cr.basicUnit || "-")}</div>
           </div>
@@ -1783,6 +1787,11 @@ ${
           <div class="field">
             <label>Model Number</label>
             <input type="text" id="ipModuleSerialNumber" placeholder="Model number" />
+          </div>
+
+          <div class="field">
+            <label>Support request if any</label>
+            <input type="text" id="ipSupportRequest" placeholder="Support request if any" />
           </div>
 
           <div class="field">

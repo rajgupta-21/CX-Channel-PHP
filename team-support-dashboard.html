@@ -569,6 +569,10 @@
         background: #e2e8f0;
         color: #444;
       }
+      .pill-rma {
+        background: #ede9fe;
+        color: #6d28d9;
+      }
       .link-btn {
         background: none;
         border: none;
@@ -829,6 +833,12 @@
             </div>
 
             <div class="metric-card">
+              <div class="metric-label">RMA</div>
+              <div class="metric-value" id="rmaCount">0</div>
+              <div class="metric-sub">Suggested for RMA</div>
+            </div>
+
+            <div class="metric-card">
               <div class="metric-label">Pending From Customer</div>
               <div class="metric-value" id="pendingCustomerCount">0</div>
               <div class="metric-sub">Waiting on customer</div>
@@ -875,6 +885,13 @@
                 onclick="setStatusFilter('Open', this)"
               >
                 Open
+              </button>
+              <button
+                class="tab-btn"
+                data-filter="RMA"
+                onclick="setStatusFilter('RMA', this)"
+              >
+                RMA
               </button>
               <button
                 class="tab-btn"
@@ -969,7 +986,7 @@
     <div class="modal-overlay" id="rmaSuggestionOverlay" style="z-index: 110">
       <div class="modal" style="width: min(520px, 100%)">
         <div class="modal-head">
-          <h3>Issue of an RMA</h3>
+          <h3>Issue an RMA</h3>
           <button class="btn btn-ghost" onclick="closeRmaSuggestionDialog()">
             Close
           </button>
@@ -997,7 +1014,7 @@
               id="confirmRmaSuggestionBtn"
               onclick="confirmRmaSuggestion()"
             >
-              Issue of an RMA
+              Issue an RMA
             </button>
           </div>
         </div>
@@ -1053,6 +1070,7 @@
         const s = norm(status);
         if (s === "open") return "pill pill-open";
         if (s === "closed") return "pill pill-closed";
+        if (s === "rma") return "pill pill-rma";
         return "pill pill-open";
       }
 
@@ -1122,6 +1140,9 @@
         const open = allSupport.filter(function (r) {
           return norm(r.status) === "open";
         }).length;
+        const rma = allSupport.filter(function (r) {
+          return norm(r.status) === "rma";
+        }).length;
         const closed = allSupport.filter(function (r) {
           return norm(r.status) === "closed";
         }).length;
@@ -1139,6 +1160,7 @@
         }).length;
         const totalEl = document.getElementById("totalCount");
         const openEl = document.getElementById("openCount");
+        const rmaEl = document.getElementById("rmaCount");
         const closedEl = document.getElementById("closedCount");
         const pendingCustomerEl = document.getElementById(
           "pendingCustomerCount",
@@ -1147,6 +1169,7 @@
         const pendingOemEl = document.getElementById("pendingOemCount");
         if (totalEl) totalEl.textContent = allSupport.length;
         if (openEl) openEl.textContent = open;
+        if (rmaEl) rmaEl.textContent = rma;
         if (closedEl) closedEl.textContent = closed;
         if (pendingCustomerEl) pendingCustomerEl.textContent = pendingCustomer;
         if (pendingFastechEl) pendingFastechEl.textContent = pendingFastech;
@@ -1457,6 +1480,9 @@
           (record.status === "Open" ? " selected" : "") +
           ">Open</option>" +
           "<option" +
+          (record.status === "RMA" ? " selected" : "") +
+          ">RMA</option>" +
+          "<option" +
           (record.status === "Closed" ? " selected" : "") +
           ">Closed</option>" +
           "</select></div>" +
@@ -1512,17 +1538,25 @@
           '<p class="td-sub">Close the ticket to notify the customer by email, or suggest the customer raise an RMA for this unresolved support request.</p>' +
           '<div class="approval-actions">' +
           '<button class="btn btn-primary" id="ticketClosedBtn" type="button"' +
-          (record.status === "Closed" ? " disabled" : "") +
+          (record.status === "Closed" || record.status === "RMA" ? " disabled" : "") +
           ">" +
-          (record.status === "Closed" ? "✓ Ticket Closed" : "Close Ticket") +
-          "</button>" +
-          '<button class="btn btn-disapprove" id="suggestRmaBtn" type="button">Issue of an RMA</button>' +
-          "</div>" +
           (record.status === "Closed"
+            ? "✓ Ticket Closed"
+            : record.status === "RMA"
+              ? "✓ RMA Issued"
+              : "Close Ticket") +
+          "</button>" +
+          '<button class="btn btn-disapprove" id="suggestRmaBtn" type="button"' +
+          (record.status === "RMA" || record.status === "Closed" ? " disabled" : "") +
+          ">Issue an RMA</button>" +
+          "</div>" +
+          (record.status === "Closed" || record.status === "RMA"
             ? '<div class="approval-status-note approved">' +
-              (record.customerMailStatus === "failed"
-                ? "Ticket closed. Failed to Mail the customer."
-                : "Ticket closed. The customer was notified by email.") +
+              (record.status === "RMA"
+                ? "RMA issued. The customer was emailed the RMA suggestion."
+                : record.customerMailStatus === "failed"
+                  ? "Ticket closed. Failed to Mail the customer."
+                  : "Ticket closed. The customer was notified by email.") +
               "</div>"
             : "") +
           "</div>" +
@@ -1670,7 +1704,7 @@
         setBtnLoading(
           "confirmRmaSuggestionBtn",
           true,
-          "Issue of an RMA",
+          "Issue an RMA",
           "Sending…",
         );
         try {
@@ -1687,16 +1721,24 @@
           );
           const data = await res.json();
           if (!res.ok) throw new Error(data.message || "Update failed");
+          currentDetail.status = "RMA";
+          currentDetail.customerMailStatus = data.emails?.customer?.error
+            ? "failed"
+            : "sent";
+          const idx = allSupport.findIndex(function (r) {
+            return r.id === currentDetail.id;
+          });
+          if (idx >= 0) allSupport[idx] = currentDetail;
           closeRmaSuggestionDialog();
           showToast(
             data.emails?.customer?.error
               ? "Failed to Mail the customer."
-              : "RMA suggestion emailed to the customer.",
+              : "RMA suggestion emailed to the customer. Ticket marked as RMA.",
             data.emails?.customer?.error ? "error" : "success",
           );
           loadSupport();
         } catch (err) {
-          setBtnLoading("confirmRmaSuggestionBtn", false, "Issue of an RMA");
+          setBtnLoading("confirmRmaSuggestionBtn", false, "Issue an RMA");
           showToast("Failed to send: " + err.message, "error");
         }
       }
