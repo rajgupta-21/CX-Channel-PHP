@@ -358,6 +358,7 @@ function requests_export_csv(): never
         ['OEM', fn ($r) => $val($r, 'oem')],
         ['Service Type', fn ($r) => $val($r, 'serviceType')],
         ['Product Model', fn ($r) => $val($r, 'product')],
+        ['Serial Number', fn ($r) => $val($r, 'serialSingle')],
         ['Product S/N', fn ($r) => $val($r, 'serialBaseUnit')],
         ['PO Number', fn ($r) => $val($r, 'poNumber')],
         ['PO Date', fn ($r) => $val($r, 'poDate')],

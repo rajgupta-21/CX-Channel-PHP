@@ -347,6 +347,75 @@
         padding: 6px 12px;
         margin-right: 10px;
       }
+      .image-preview {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .preview-item {
+        position: relative;
+        aspect-ratio: 1;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        background: #fafafa;
+        cursor: pointer;
+        transition: transform 0.15s, box-shadow 0.15s;
+      }
+      .preview-item:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      }
+      .preview-item img,
+      .preview-item .pdf-icon {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .preview-item .pdf-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        color: var(--blue);
+      }
+      .preview-item .remove-btn {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: rgba(220,38,38,0.9);
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.15s;
+      }
+      .preview-item:hover .remove-btn {
+        opacity: 1;
+      }
+      .preview-item .file-name {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0,0,0,0.6);
+        color: #fff;
+        font-size: 9px;
+        padding: 2px 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
       .serial-group {
         grid-column: 1/-1;
         display: none;
@@ -702,7 +771,7 @@
 
               <div class="field full">
                 <label
-                  >Upload Image
+                  >Upload Images
                   <span
                     style="
                       font-weight: 400;
@@ -710,7 +779,7 @@
                       letter-spacing: 0;
                       opacity: 0.7;
                     "
-                    >(optional — jpg, png, pdf)</span
+                    >(optional — jpg, png, pdf, max 5 files)</span
                   ></label
                 >
                 <input
@@ -719,8 +788,10 @@
                   accept="image/*,.pdf"
                   multiple
                 />
+                <div id="imagePreview" class="image-preview"></div>
                 <div class="note">
-                  You may attach photos of the unit or relevant documents.
+                  You may attach photos of the unit or relevant documents. Click a
+                  preview to remove it.
                 </div>
               </div>
 
@@ -1167,6 +1238,69 @@
         box.style.display = "block";
       }
 
+      // Track selected files for preview and removal
+      let selectedFiles = [];
+
+      function renderImagePreview() {
+        const container = document.getElementById("imagePreview");
+        if (!container) return;
+        container.innerHTML = "";
+        selectedFiles.forEach((file, idx) => {
+          const item = document.createElement("div");
+          item.className = "preview-item";
+          item.dataset.index = idx;
+          if (file.type.startsWith("image/")) {
+            const url = URL.createObjectURL(file);
+            const img = document.createElement("img");
+            img.src = url;
+            img.alt = file.name;
+            item.appendChild(img);
+          } else {
+            const icon = document.createElement("div");
+            icon.className = "pdf-icon";
+            icon.textContent = "📄";
+            item.appendChild(icon);
+          }
+          const name = document.createElement("div");
+          name.className = "file-name";
+          name.textContent = file.name;
+          item.appendChild(name);
+          const removeBtn = document.createElement("button");
+          removeBtn.className = "remove-btn";
+          removeBtn.type = "button";
+          removeBtn.textContent = "×";
+          removeBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            removeFile(idx);
+          });
+          item.appendChild(removeBtn);
+          container.appendChild(item);
+        });
+      }
+
+      function removeFile(idx) {
+        selectedFiles.splice(idx, 1);
+        renderImagePreview();
+        // Also clear the native input so it doesn't re-upload removed files
+        const fileInput = document.getElementById("imageUpload");
+        if (fileInput) {
+          const dt = new DataTransfer();
+          selectedFiles.forEach(f => dt.items.add(f));
+          fileInput.files = dt.files;
+        }
+      }
+
+      document.getElementById("imageUpload").addEventListener("change", (e) => {
+        const newFiles = Array.from(e.target.files);
+        selectedFiles = selectedFiles.concat(newFiles);
+        // Limit to 5 files
+        if (selectedFiles.length > 5) {
+          selectedFiles = selectedFiles.slice(0, 5);
+          show("Maximum 5 files allowed. Only the first 5 were kept.", "error");
+        }
+        renderImagePreview();
+      });
+
       // Clears every form field and restores the initial page state so the
       // user can describe a brand-new request. Also re-enables the submit
       // button (it stays in the loading state otherwise after a successful
@@ -1204,6 +1338,8 @@
 
         const fileInput = document.getElementById("imageUpload");
         if (fileInput) fileInput.value = "";
+        selectedFiles = [];
+        renderImagePreview();
         document.getElementById("productResults").innerHTML = "";
 
         // Restore the same visibility state the page has on first load.
@@ -1336,10 +1472,9 @@
               formData.append(k, v);
             });
 
-            const files = document.getElementById("imageUpload").files;
-            for (let i = 0; i < files.length; i++) {
-              formData.append("images", files[i]);
-            }
+            selectedFiles.forEach((file) => {
+              formData.append("images", file);
+            });
 
             const res = await fetch(endpoint, {
               method: "POST",
