@@ -479,6 +479,7 @@ function build_approval_email(array $request, array $opts = []): array
     $statusNotes = $opts['statusNotes'] ?? ($request['ipAdminNote'] ?? '');
     $billTo = (string) ($request['billingAddress'] ?? '');
     $returnTo = (string) ($request['returnAddress'] ?? '');
+    $calCert = (string) ($request['calCertificateAddress'] ?? '');
 
     $addressLines = array_map(fn ($l) => esc_hl($l), company_address_lines());
 
@@ -516,6 +517,9 @@ function build_approval_email(array $request, array $opts = []): array
         $text .= "\n" . 'Bill-to Address(if applicable): ' . $billTo;
     }
     $text .= "\n" . 'Return Address: ' . $returnTo;
+    if ($isCalibration && $calCert !== '') {
+        $text .= "\n" . 'Calibration Certificate Address: ' . $calCert;
+    }
 
     $rows = [
         field_row('Date of Request:', $requestDate),
@@ -547,6 +551,9 @@ function build_approval_email(array $request, array $opts = []): array
 
     $rows[] = field_row('Bill-to Address(if applicable):', $billTo);
     $rows[] = field_row('Return Address:', $returnTo);
+    if ($isCalibration && $calCert !== '') {
+        $rows[] = field_row('Calibration Certificate Address:', $calCert);
+    }
 
     $bodyHtml = '<p style="margin:0 0 12px;">Hello ' . esc_hl($request['name'] ?? '') . '!</p>'
         . '<p style="margin:0 0 16px;">Your RMA Request has been approved and RMA Number for your request is ' . esc_hl($rma) . ' .</p>'
