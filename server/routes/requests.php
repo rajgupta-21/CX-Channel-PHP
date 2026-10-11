@@ -259,7 +259,10 @@ function requests_update(): never
 
     if ($decision === 'approved' && !empty($record['email'])) {
         try {
-            $mail = build_approval_email($record, ['senderName' => $body['senderName'] ?? '']);
+            $mail = build_approval_email($record, [
+                'senderName'   => $body['senderName'] ?? '',
+                'approvalNote' => trim((string) ($body['approvalNote'] ?? '')),
+            ]);
             send_mail([
                 'to'          => $record['email'],
                 'subject'     => $mail['subject'],

@@ -480,6 +480,7 @@ function build_approval_email(array $request, array $opts = []): array
     $billTo = (string) ($request['billingAddress'] ?? '');
     $returnTo = (string) ($request['returnAddress'] ?? '');
     $calCert = (string) ($request['calCertificateAddress'] ?? '');
+    $approvalNote = trim((string) ($opts['approvalNote'] ?? ''));
 
     $addressLines = array_map(fn ($l) => esc_hl($l), company_address_lines());
 
@@ -487,6 +488,7 @@ function build_approval_email(array $request, array $opts = []): array
         'Hello ' . ($request['name'] ?? '') . '!',
         'Your RMA Request has been approved and RMA Number for your request is ' . $rma . ' .',
         '',
+        ...($approvalNote !== '' ? ['Note from Fastech:', $approvalNote, ''] : []),
         'Material to be sent to :',
         COMPANY_INFO['name'],
         ...company_address_lines(),
@@ -557,6 +559,11 @@ function build_approval_email(array $request, array $opts = []): array
 
     $bodyHtml = '<p style="margin:0 0 12px;">Hello ' . esc_hl($request['name'] ?? '') . '!</p>'
         . '<p style="margin:0 0 16px;">Your RMA Request has been approved and RMA Number for your request is ' . esc_hl($rma) . ' .</p>'
+        . ($approvalNote !== ''
+            ? '<div style="margin:0 0 16px;padding:12px 14px;background:#fbecd7;border-left:4px solid #00538f;border-radius:6px;">'
+                . '<strong>Note from Fastech:</strong><br/>'
+                . '<span style="white-space:pre-wrap;">' . esc_hl($approvalNote) . '</span></div>'
+            : '')
         . '<p style="margin:0 0 4px;"><strong>Material to be sent to :</strong> ' . esc_hl(COMPANY_INFO['name']) . ',</p>'
         . raw_para(implode('<br/>', $addressLines))
         . field_table($rows);

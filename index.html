@@ -939,6 +939,19 @@
               </div>
 
               <div class="field">
+                <label>Keyword</label>
+                <input
+                  id="fSearch"
+                  placeholder="Customer, company, model, status, notes…"
+                />
+              </div>
+
+              <div class="field">
+                <label>Serial Number</label>
+                <input id="fSerial" placeholder="Search any S/N" />
+              </div>
+
+              <div class="field">
                 <label>RMA</label>
                 <input id="fKeyword" placeholder="Search RMA number" />
               </div>
@@ -1043,6 +1056,7 @@
                     <th>Sr.</th>
                     <th>RMA No</th>
                     <th>RMA Date</th>
+                    <th>Current Status</th>
                     <th>Received Date</th>
                     <th>PO Number</th>
                     <th>OEM</th>
@@ -1064,6 +1078,42 @@
           </div>
         </div>
       </main>
+    </div>
+
+    <div class="modal-overlay" id="approveOverlay" style="z-index: 110">
+      <div class="modal" style="width: min(520px, 100%)">
+        <div class="modal-head">
+          <h3>Approve Request</h3>
+          <button class="btn btn-ghost" onclick="closeApproveDialog()">
+            Close
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="approval-hint">
+            Add any notes for the customer. They will be included in the
+            approval email along with the RMA number.
+          </p>
+          <div class="field full">
+            <label>Additional notes for the customer (optional)</label>
+            <textarea
+              id="approvalNote"
+              placeholder="e.g. Please pack the unit with all accessories and mention the RMA number on the box."
+            ></textarea>
+          </div>
+          <div class="modal-actions">
+            <button class="btn btn-ghost" onclick="closeApproveDialog()">
+              Cancel
+            </button>
+            <button
+              class="btn btn-approve"
+              id="confirmApproveBtn"
+              onclick="confirmApproveRequest()"
+            >
+              ✓ Approve &amp; Email Customer
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="modal-overlay" id="disapproveOverlay" style="z-index: 110">
@@ -1148,6 +1198,8 @@
         status: "",
         poNumber: "",
         receivedDate: "",
+        search: "",
+        serial: "",
       };
 
       const esc = (s) =>
@@ -1265,7 +1317,7 @@
           applyFilters();
         } catch (e) {
           tb.innerHTML =
-            '<tr><td colspan="14" class="td-empty">Could not load requests.</td></tr>';
+            '<tr><td colspan="15" class="td-empty">Could not load requests.</td></tr>';
         }
       }
 
@@ -1342,6 +1394,12 @@
         af.receivedDate = (document.getElementById("fReceivedDate").value || "")
           .trim()
           .toLowerCase();
+        af.search = (document.getElementById("fSearch").value || "")
+          .trim()
+          .toLowerCase();
+        af.serial = (document.getElementById("fSerial").value || "")
+          .trim()
+          .toLowerCase();
         page = 1;
         buildFiltered();
       }
@@ -1354,6 +1412,8 @@
           "fStatus",
           "fPoNumber",
           "fReceivedDate",
+          "fSearch",
+          "fSerial",
         ].forEach((id) => (document.getElementById(id).value = ""));
         Object.keys(af).forEach((k) => (af[k] = ""));
         statusFilter = "all";
@@ -1379,6 +1439,69 @@
           .forEach((b) => b.classList.toggle("active", b.dataset.sf === sf));
         page = 1;
         buildFiltered();
+      }
+
+      // All serial numbers on a request (customer-entered + admin module S/N).
+      function serialText(r) {
+        return [
+          r.serialSingle,
+          r.serialBaseUnit || r.basicUnit,
+          r.serialRfCable || r.rfCable,
+          r.serialAntenna || r.antenna,
+          r.processingDetails?.ipModuleSerialNumber,
+        ]
+          .map((v) => String(v || ""))
+          .join(" | ")
+          .toLowerCase();
+      }
+
+      // Serial numbers shown under the product model in the table,
+      // using the same labels as the view request panel.
+      function serialLines(r) {
+        return [
+          ["S/N", r.serialSingle],
+          ["Base Unit S/N", r.serialBaseUnit || r.basicUnit],
+          ["RF Cable S/N", r.serialRfCable || r.rfCable],
+          ["Antenna S/N", r.serialAntenna || r.antenna],
+        ]
+          .filter(([, v]) => String(v || "").trim())
+          .map(
+            ([label, v]) =>
+              `<div class="td-sub">${label}: ${esc(String(v).trim())}</div>`,
+          )
+          .join("");
+      }
+
+      // Free-text search across the request's customer, product, status
+      // and admin processing fields.
+      function keywordText(r) {
+        return [
+          r.id,
+          displayRma(r),
+          r.oem,
+          r.serviceType,
+          r.product,
+          r.name,
+          r.email,
+          r.phone,
+          r.company,
+          r.designation,
+          r.location,
+          r.description,
+          r.additionalInfo,
+          r.customStatus,
+          fmtStatus(r.status),
+          r.rmaStatus,
+          r.pendingForCustomer,
+          r.pendingForFastech,
+          r.pendingForOem,
+          r.internalNote,
+          r.customerFeedback,
+          ...Object.values(r.processingDetails || {}),
+        ]
+          .map((v) => String(v ?? ""))
+          .join(" | ")
+          .toLowerCase();
       }
 
       function buildFiltered() {
@@ -1431,6 +1554,8 @@
             )
               return false;
           }
+          if (af.serial && !serialText(r).includes(af.serial)) return false;
+          if (af.search && !keywordText(r).includes(af.search)) return false;
           return true;
         });
 
@@ -1463,7 +1588,7 @@
 
         if (!pageRows.length) {
           tb.innerHTML =
-            '<tr><td colspan="14" class="td-empty">No matching requests found.</td></tr>';
+            '<tr><td colspan="15" class="td-empty">No matching requests found.</td></tr>';
           renderPagination();
           return;
         }
@@ -1499,12 +1624,14 @@
           </button>
         </td>
         <td style="font-size:12px;color:var(--muted);white-space:nowrap;">${esc(fmtDate(r.rmaIssuedAt))}</td>
+        <td style="font-size:12px;min-width:140px;max-width:240px;white-space:pre-line;">${esc(r.customStatus || "—")}</td>
         <td style="font-size:12px;color:var(--muted);white-space:nowrap;">${esc(fmtDate(r.processingDetails?.ipReceivedDate))}</td>
         <td>${esc(r.processingDetails?.ipPoNoAndDate || "")}</td>
         <td>${esc(r.oem || "-")}</td>
         <td>${esc(r.serviceType || "-")}</td>
         <td>
           <div style="font-weight:700;">${esc(r.product || "-")}</div>
+          ${serialLines(r)}
         </td>
         <td>
           <button class="link-btn" onclick="openModal('${safeId}')">
@@ -1595,7 +1722,7 @@
               <input
                 id="uCustomStatus"
                 class="rma-current-status-input"
-                placeholder="Internal status for CSV export only"
+                placeholder="Current status (shown in the RMA table and CSV)"
               />
             </div>
           </div>
@@ -2004,9 +2131,31 @@ ${
         currentRequest = null;
       }
 
-      async function approveRequest() {
+      // Approve now asks for optional notes first; they go out in the
+      // approval email to the customer.
+      function approveRequest() {
         if (!currentRequest) return;
-        await applyApprovalDecision("approved");
+        document.getElementById("approvalNote").value = "";
+        document.getElementById("approveOverlay").classList.add("open");
+        document.getElementById("approvalNote").focus();
+      }
+
+      function closeApproveDialog() {
+        document.getElementById("approveOverlay").classList.remove("open");
+      }
+
+      async function confirmApproveRequest() {
+        const note = document.getElementById("approvalNote").value.trim();
+        const label = "✓ Approve &amp; Email Customer";
+        setBtnLoading("confirmApproveBtn", true, label, "Processing…");
+        const ok = await applyApprovalDecision(
+          "approved",
+          "",
+          "confirmApproveBtn",
+          note,
+        );
+        setBtnLoading("confirmApproveBtn", false, label);
+        if (ok) closeApproveDialog();
       }
 
       function openDisapproveDialog() {
@@ -2046,6 +2195,7 @@ ${
         decision,
         disapprovalReason = "",
         loadingBtnId = "approveBtn",
+        approvalNote = "",
       ) {
         const pendingVal = document.getElementById("uPendingStatus").value;
         let senderName = "";
@@ -2066,6 +2216,7 @@ ${
           pendingForOem:
             pendingVal === "Pending from OEM" ? "Pending From OEM" : "",
           disapprovalReason,
+          approvalNote,
           customerFeedback:
             document.getElementById("ipCustomerFeedback")?.value || "",
         };
@@ -2073,6 +2224,8 @@ ${
         const restoreBtn = () => {
           if (loadingBtnId === "approveBtn")
             setBtnLoading("approveBtn", false, "✓ Approve Request");
+          else if (loadingBtnId === "confirmApproveBtn")
+            setBtnLoading(loadingBtnId, false, "✓ Approve &amp; Email Customer");
           else setBtnLoading(loadingBtnId, false, "Disapprove Request");
         };
         setBtnLoading(loadingBtnId, true, "", "Processing…");
@@ -2246,7 +2399,15 @@ ${
       }
 
       document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") closeModal();
+        if (e.key === "Escape") {
+          if (
+            document.getElementById("approveOverlay").classList.contains("open")
+          ) {
+            closeApproveDialog();
+            return;
+          }
+          closeModal();
+        }
       });
 
       document.addEventListener("DOMContentLoaded", () => {

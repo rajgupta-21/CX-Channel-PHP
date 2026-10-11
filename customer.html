@@ -77,17 +77,17 @@
         gap: 12px;
       }
       .logo {
-        width: 42px;
-        height: 42px;
+        height: 46px;
+        padding: 3px 8px;
         border-radius: 10px;
-        background: rgba(255, 255, 255, 0.14);
-        border: 1px solid rgba(255, 255, 255, 0.22);
+        background: #fff;
         display: grid;
         place-items: center;
       }
-      .logo svg {
-        width: 20px;
-        height: 20px;
+      .logo img {
+        height: 40px;
+        width: auto;
+        display: block;
       }
       .brand h1 {
         font-size: 18px;
@@ -535,20 +535,15 @@
       <header class="topbar">
         <div class="brand">
           <div class="logo">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="white"
-              stroke-width="2.2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M4 19h16M6 15h12M8 11h8M10 7h4" />
-            </svg>
+            <img
+              src="specs/fastechcommunications.png"
+              alt="Fastech Communications"
+              width="105"
+              height="40"
+            />
           </div>
           <div>
-            <h1>Fastech</h1>
-            <p>SUPPORT PORTAL</p>
+            <h1>Service Portal</h1>
           </div>
         </div>
       </header>
@@ -592,43 +587,10 @@
           </div>
           <div class="panel-body">
             <form class="form-grid" id="requestForm">
-              <div class="section-label">Customer Information</div>
-
-              <div class="field">
-                <label>Customer Name <span class="req">*</span></label>
-                <input id="name" type="text" placeholder="Customer name" />
-              </div>
-              <div class="field">
-                <label>Email <span class="req">*</span></label>
-                <input id="email" type="email" placeholder="name@company.com" />
-              </div>
-              <div class="field">
-                <label>Phone</label>
-                <input id="phone" type="text" placeholder="Mobile number" />
-              </div>
-              <div class="field">
-                <label>Company</label>
-                <input id="company" type="text" placeholder="Company name" />
-              </div>
-              <div class="field">
-                <label>Designation</label>
-                <input
-                  id="designation"
-                  type="text"
-                  placeholder="Your designation"
-                />
-              </div>
-              <div class="field">
-                <label>Location</label>
-                <input id="location" type="text" placeholder="Your location" />
-              </div>
-
-              <hr class="section-divider" />
-
               <div class="section-label">Service Details</div>
 
               <div class="field">
-                <label>Types of OEM <span class="req">*</span></label>
+                <label>Name of OEM <span class="req">*</span></label>
                 <select id="oem">
                   <option value="">Select OEM</option>
                   <option value="VeEX">VeEX</option>
@@ -697,6 +659,46 @@
                 />
               </div>
 
+              <hr class="section-divider" />
+
+              <div class="section-label">Customer Information</div>
+
+              <div class="field">
+                <label>Customer Name <span class="req">*</span></label>
+                <input id="name" type="text" placeholder="Customer name" />
+              </div>
+              <div class="field">
+                <label>Email <span class="req">*</span></label>
+                <input id="email" type="email" placeholder="name@company.com" />
+              </div>
+              <div class="field">
+                <label>Phone <span class="req">*</span></label>
+                <input
+                  id="phone"
+                  type="tel"
+                  inputmode="numeric"
+                  pattern="[0-9]*"
+                  maxlength="15"
+                  placeholder="Mobile number"
+                />
+              </div>
+              <div class="field">
+                <label>Company <span class="req">*</span></label>
+                <input id="company" type="text" placeholder="Company name" />
+              </div>
+              <div class="field">
+                <label>Designation</label>
+                <input
+                  id="designation"
+                  type="text"
+                  placeholder="Your designation"
+                />
+              </div>
+              <div class="field">
+                <label>Location <span class="req">*</span></label>
+                <input id="location" type="text" placeholder="Your location" />
+              </div>
+
               <hr class="section-divider" id="dividerSerial" />
 
               <div class="serial-group" id="serialGroup">
@@ -753,7 +755,7 @@
 
               <hr class="section-divider" id="dividerIssue" />
 
-              <div class="section-label">Details</div>
+              <div class="section-label">The Problem</div>
 
               <div class="field full">
                 <label>Description of Problem</label>
@@ -1207,6 +1209,11 @@
           document.getElementById("product").value = event.target.value.trim();
         });
 
+      // Phone accepts digits only — strips letters/special chars on typing or paste.
+      document.getElementById("phone").addEventListener("input", (event) => {
+        event.target.value = event.target.value.replace(/\D/g, "");
+      });
+
       document.addEventListener("click", (event) => {
         const productField = document.getElementById("productField");
         if (!productField.contains(event.target)) {
@@ -1416,13 +1423,16 @@
           if (
             !payload.name ||
             !payload.email ||
+            !payload.phone ||
+            !payload.company ||
+            !payload.location ||
             !oemSelected ||
             (oemSelected === "Others" && !oemOther) ||
             !payload.serviceType ||
             !payload.product
           ) {
             show(
-              "Please fill all required fields: Customer Name, Email, OEM, Service Type, and Product Model.",
+              "Please fill all required fields: OEM, Service Type, Product Model, Customer Name, Email, Phone, Company, and Location.",
               "error",
             );
             return;
