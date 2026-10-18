@@ -243,9 +243,11 @@ function requests_update(): never
         $updateData['disapprovalReason'] = trim((string) ($body['disapprovalReason'] ?? ''));
     }
 
-    $movingToPending = ($updateData['status'] ?? $record['status']) === 'pending'
+    // An RMA number is only issued when the admin explicitly approves the
+    // request — never as a side effect of a status change or other save.
+    $needsRma = $decision === 'approved'
         && (empty($record['rma_number']) || empty($record['rma_issued_at']));
-    if ($movingToPending) {
+    if ($needsRma) {
         $updateData['rma_number'] = generate_rma_number();
         $updateData['rma_issued_at'] = now_ist();
     }
@@ -357,14 +359,14 @@ function requests_export_csv(): never
     $baseFields = [
         ['Sr.No', fn ($r, $i) => $i + 1],
         ['RMA No', fn ($r) => $displayRma($r)],
-        ['Date of RMA', fn ($r) => $r['rmaIssuedAt'] ?: '-'],
+        ['Date of RMA', fn ($r) => csv_date($r['rmaIssuedAt'])],
         ['OEM', fn ($r) => $val($r, 'oem')],
         ['Service Type', fn ($r) => $val($r, 'serviceType')],
         ['Product Model', fn ($r) => $val($r, 'product')],
         ['Serial Number', fn ($r) => $val($r, 'serialSingle')],
         ['Product S/N', fn ($r) => $val($r, 'serialBaseUnit')],
         ['PO Number', fn ($r) => $val($r, 'poNumber')],
-        ['PO Date', fn ($r) => $val($r, 'poDate')],
+        ['PO Date', fn ($r) => csv_date($r['poDate'] ?? '')],
         ['Antenna', fn ($r) => $val($r, 'serialAntenna')],
         ['RF Cable', fn ($r) => $val($r, 'serialRfCable')],
         ['Additional Info', fn ($r) => $val($r, 'additionalInfo')],
@@ -380,43 +382,35 @@ function requests_export_csv(): never
         ['Address for Cal Certificate', fn ($r) => $val($r, 'calCertificateAddress')],
         ['Description of Issue', fn ($r) => $val($r, 'description')],
         ['Admin Note', fn ($r) => $r['processingDetails']['ipAdminNote'] ?: '-'],
-        ['Received Date', fn ($r) => $r['processingDetails']['ipReceivedDate'] ?: '-'],
-        ['Date of Investigation', fn ($r) => $r['processingDetails']['ipDateOfInvestigation'] ?: '-'],
+        ['Received Date', fn ($r) => csv_date($r['processingDetails']['ipReceivedDate'])],
+        ['Date of Investigation', fn ($r) => csv_date($r['processingDetails']['ipDateOfInvestigation'])],
         ['Warranty', fn ($r) => $r['processingDetails']['ipWarranty'] ?: '-'],
         ['Investigation Details', fn ($r) => $r['processingDetails']['ipInvestigationDetails'] ?: '-'],
         ['Repair Details', fn ($r) => $r['processingDetails']['ipRepairDetails'] ?: '-'],
         ['Repaired by Person', fn ($r) => $r['processingDetails']['ipRepairedBy'] ?: '-'],
-        ['Estimate Date', fn ($r) => $r['processingDetails']['ipEstimateDate'] ?: '-'],
+        ['Estimate Date', fn ($r) => csv_date($r['processingDetails']['ipEstimateDate'])],
         ['Estimate Amount INR', fn ($r) => $r['processingDetails']['ipEstimateAmount'] ?: '-'],
         ['P.O. No. & Date', fn ($r) => $r['processingDetails']['ipPoNoAndDate'] ?: '-'],
-        ['PO Received Date', fn ($r) => $r['processingDetails']['ipPoReceivedDate'] ?: '-'],
+        ['PO Received Date', fn ($r) => csv_date($r['processingDetails']['ipPoReceivedDate'])],
         ['OEM RMA No.', fn ($r) => $r['processingDetails']['ipOemRmaNo'] ?: '-'],
-        ['Date of Sent', fn ($r) => $r['processingDetails']['ipDateOfSent'] ?: '-'],
+        ['Date of Sent', fn ($r) => csv_date($r['processingDetails']['ipDateOfSent'])],
         ['Platform/ Module', fn ($r) => $r['processingDetails']['ipPlatformModule'] ?: '-'],
         ['OEM Quotation', fn ($r) => $r['processingDetails']['ipOemQuotation'] ?: '-'],
-        ['Date of Receving', fn ($r) => $r['processingDetails']['ipDateOfReceivingFromOem'] ?: '-'],
+        ['Date of Receving', fn ($r) => csv_date($r['processingDetails']['ipDateOfReceivingFromOem'])],
         ['DC No. & Date', fn ($r) => $r['processingDetails']['ipDcNoAndDate'] ?: '-'],
-        ['Dispatched Date', fn ($r) => $r['processingDetails']['ipDispatchedDate'] ?: '-'],
+        ['Dispatched Date', fn ($r) => csv_date($r['processingDetails']['ipDispatchedDate'])],
         ['LR No.', fn ($r) => $r['processingDetails']['ipLrNo'] ?: '-'],
         ['Open / Closed', fn ($r) => $fmtStatus($r['status'])],
         ['Open Awaiting for', fn ($r) => $pendingFrom($r)],
         ['Reason for waiting', fn ($r) => $r['processingDetails']['ipReasonForWaiting'] ?: '-'],
-        ['Delivered Date', fn ($r) => $r['processingDetails']['ipDeliveredDate'] ?: '-'],
-        ['Ack. Date', fn ($r) => $r['processingDetails']['ipAckDateFromWh'] ?: '-'],
-        ['Submission Reference', fn ($r) => $r['id'] ?: '-'],
+        ['Delivered Date', fn ($r) => csv_date($r['processingDetails']['ipDeliveredDate'])],
+        ['Ack. Date', fn ($r) => csv_date($r['processingDetails']['ipAckDateFromWh'])],
         ['RMA Current Status', fn ($r) => $r['customStatus'] ?: '-'],
         ['RMA Status', fn ($r) => (($r['rmaStatus'] ?? '') !== '') ? $r['rmaStatus'] : 'RMA Not Received'],
         ['Name of Courier', fn ($r) => $r['processingDetails']['ipCourierName'] ?: '-'],
         ['Customer Feedback', fn ($r) => $val($r, 'customerFeedback')],
         ['Estimate Number', fn ($r) => $r['processingDetails']['ipEstimateNumber'] ?: '-'],
         ['Remark', fn ($r) => $r['processingDetails']['ipRemark'] ?: '-'],
-        ['Uploaded Files', function ($r) {
-            $names = array_map(fn ($f) => $f['originalName'] ?: $f['fileName'], $r['images'] ?? []);
-            return $names ? implode('; ', $names) : '-';
-        }],
-        ['Created At', fn ($r) => $val($r, 'createdAt')],
-        ['Updated At', fn ($r) => $val($r, 'updatedAt')],
-        ['Disapproval Reason', fn ($r) => $val($r, 'disapprovalReason')],
         ['Company Name (Admin)', fn ($r) => $r['processingDetails']['ipCompanyName'] ?: '-'],
         ['Location (Admin)', fn ($r) => $r['processingDetails']['ipLocation'] ?: '-'],
         ['Model Number (Admin)', fn ($r) => $r['processingDetails']['ipModuleSerialNumber'] ?: '-'],

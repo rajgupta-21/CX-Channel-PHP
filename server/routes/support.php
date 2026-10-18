@@ -364,7 +364,9 @@ function support_export_csv(): never
     $escape = fn ($v) => '"' . str_replace('"', '""', (string) ($v ?? '')) . '"';
 
     $dataRows = array_map(function ($r) use ($viewKeys, $escape, $norm) {
-        $cells = array_map(fn ($key) => (($r[$key] ?? '') !== '') ? $r[$key] : '-', $viewKeys);
+        $cells = array_map(fn ($key) => in_array($key, ['createdAt', 'updatedAt'], true)
+            ? csv_date($r[$key] ?? '')
+            : ((($r[$key] ?? '') !== '') ? $r[$key] : '-'), $viewKeys);
         $cells[] = is_pending_flag($r['pendingForCustomer'])
             ? 'Pending from Customer'
             : (is_pending_flag($r['pendingForFastech'])

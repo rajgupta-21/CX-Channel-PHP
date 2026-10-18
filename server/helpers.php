@@ -61,6 +61,30 @@ function generate_rma_number(): string
     return str_pad((string) max(12000, $max + 1), 5, '0', STR_PAD_LEFT);
 }
 
+// CSV dates use DD/Mon/YY (e.g. "19/Oct/26"), matching the dashboard tables.
+// Accepts "19/10/2026, 10:11:12", "2026-10-19" and "19-10-2026"; anything
+// else is returned unchanged.
+function csv_date($value): string
+{
+    $s = trim((string) ($value ?? ''));
+    if ($s === '') {
+        return '-';
+    }
+    $m = [];
+    if (preg_match('/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/', $s, $m)) {
+        [$day, $month, $year] = [(int) $m[1], (int) $m[2], $m[3]];
+    } elseif (preg_match('/^(\d{4})-(\d{1,2})-(\d{1,2})/', $s, $m)) {
+        [$day, $month, $year] = [(int) $m[3], (int) $m[2], $m[1]];
+    } else {
+        return $s;
+    }
+    $months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    if ($day < 1 || $month < 1 || $month > 12) {
+        return $s;
+    }
+    return str_pad((string) $day, 2, '0', STR_PAD_LEFT) . '/' . $months[$month - 1] . '/' . substr($year, -2);
+}
+
 function parse_ist($str): int
 {
     if (!$str) {

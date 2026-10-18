@@ -942,7 +942,7 @@
                 <label>Keyword</label>
                 <input
                   id="fSearch"
-                  placeholder="Customer, company, model, status, notes…"
+                  placeholder="OEM, service type, customer, company, model…"
                 />
               </div>
 
@@ -1274,6 +1274,15 @@
         return s;
       }
 
+      // RMA Date column: DD/Mon/YY, e.g. "24/05/2026, 19:41:42" -> "24/May/26".
+      const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      function fmtRmaDate(value) {
+        const d = fmtDate(value);
+        const m = d.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+        if (!m || !MONTHS[Number(m[2]) - 1]) return d;
+        return `${m[1]}/${MONTHS[Number(m[2]) - 1]}/${m[3].slice(-2)}`;
+      }
+
       function fmtStatus(s) {
         const v = String(s || "").toLowerCase();
         if (!v) return "—";
@@ -1555,7 +1564,11 @@
               return false;
           }
           if (af.serial && !serialText(r).includes(af.serial)) return false;
-          if (af.search && !keywordText(r).includes(af.search)) return false;
+          if (af.search) {
+            const text = keywordText(r);
+            if (!af.search.split(/\s+/).every((w) => text.includes(w)))
+              return false;
+          }
           return true;
         });
 
@@ -1623,7 +1636,7 @@
             <strong>${esc(displayRma(r))}</strong>
           </button>
         </td>
-        <td style="font-size:12px;color:var(--muted);white-space:nowrap;">${esc(fmtDate(r.rmaIssuedAt))}</td>
+        <td style="font-size:12px;color:var(--muted);white-space:nowrap;">${esc(fmtRmaDate(r.rmaIssuedAt))}</td>
         <td style="font-size:12px;min-width:140px;max-width:240px;white-space:pre-line;">${esc(r.customStatus || "—")}</td>
         <td style="font-size:12px;color:var(--muted);white-space:nowrap;">${esc(fmtDate(r.processingDetails?.ipReceivedDate))}</td>
         <td>${esc(r.processingDetails?.ipPoNoAndDate || "")}</td>

@@ -476,7 +476,7 @@ function build_approval_email(array $request, array $opts = []): array
     $rma = display_rma($request['rmaNumber'] ?? '');
     $requestDate = format_date($request['createdAt'] ?? '');
     $subject = 'RMA Number - ' . $rma . ' Date of Request: ' . $requestDate;
-    $statusNotes = $opts['statusNotes'] ?? ($request['ipAdminNote'] ?? '');
+    $statusNotes = trim((string) ($opts['statusNotes'] ?? ($request['ipAdminNote'] ?? '')));
     $billTo = (string) ($request['billingAddress'] ?? '');
     $returnTo = (string) ($request['returnAddress'] ?? '');
     $calCert = (string) ($request['calCertificateAddress'] ?? '');
@@ -498,7 +498,7 @@ function build_approval_email(array $request, array $opts = []): array
         'OEM: ' . ($request['oem'] ?? ''),
         'Type: ' . ($request['serviceType'] ?? ''),
         'Status: Approved',
-        'Status Notes: ' . $statusNotes,
+        ...($statusNotes !== '' ? ['Status Notes: ' . $statusNotes] : []),
         'Description of the Issue:',
         ($request['description'] ?? ''),
         'Additional Information:',
@@ -527,7 +527,9 @@ function build_approval_email(array $request, array $opts = []): array
         field_row('Date of Request:', $requestDate),
         field_row('RMA Number:', $rma),
         field_row('OEM:', $request['oem'] ?? '', 'Type:', $request['serviceType'] ?? ''),
-        field_row('Status:', 'Approved', 'Status Notes:', $statusNotes),
+        $statusNotes !== ''
+            ? field_row('Status:', 'Approved', 'Status Notes:', $statusNotes)
+            : field_row('Status:', 'Approved'),
         field_row_full('Description of the Issue:', $request['description'] ?? ''),
         field_row_full('Additional Information:', $request['additionalInfo'] ?? ''),
         field_row("Sender's Full Name:", $request['name'] ?? ''),

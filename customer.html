@@ -587,7 +587,7 @@
           </div>
           <div class="panel-body">
             <form class="form-grid" id="requestForm">
-              <div class="section-label">Service Details</div>
+              <div class="section-label">Product Info</div>
 
               <div class="field">
                 <label>Name of OEM <span class="req">*</span></label>
@@ -758,16 +758,16 @@
               <div class="section-label">The Problem</div>
 
               <div class="field full">
-                <label>Description of Problem</label>
+                <label>Description of Problem <span class="req">*</span></label>
                 <textarea
                   id="description"
-                  placeholder="Describe the problem clearly (optional)"
+                  placeholder="Describe the problem clearly"
                 ></textarea>
               </div>
 
               <div class="field full">
                 <label
-                  >Upload Images
+                  >Upload Images <span class="req">*</span>
                   <span
                     style="
                       font-weight: 400;
@@ -775,7 +775,7 @@
                       letter-spacing: 0;
                       opacity: 0.7;
                     "
-                    >(optional — jpg, png, pdf, max 5 files)</span
+                    >(jpg, png, pdf, max 5 files)</span
                   ></label
                 >
                 <input
@@ -785,10 +785,6 @@
                   multiple
                 />
                 <div id="imagePreview" class="image-preview"></div>
-                <div class="note">
-                  You may attach photos of the unit or relevant documents. Click
-                  a preview to remove it.
-                </div>
               </div>
 
               <hr class="section-divider" id="dividerAddress" />
@@ -1435,6 +1431,16 @@
               "Please fill all required fields: OEM, Service Type, Product Model, Customer Name, Email, Phone, Company, and Location.",
               "error",
             );
+            return;
+          }
+
+          if (!payload.description) {
+            show("Please provide a Description of Problem.", "error");
+            return;
+          }
+
+          if (selectedFiles.length === 0) {
+            show("Please upload at least one image or document.", "error");
             return;
           }
 
