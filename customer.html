@@ -767,7 +767,7 @@
 
               <div class="field full">
                 <label
-                  >Upload Images <span class="req">*</span>
+                  >Upload Images
                   <span
                     style="
                       font-weight: 400;
@@ -775,7 +775,7 @@
                       letter-spacing: 0;
                       opacity: 0.7;
                     "
-                    >(jpg, png, pdf, max 5 files)</span
+                    >(optional · jpg, png, pdf, max 5 files)</span
                   ></label
                 >
                 <input
@@ -1436,11 +1436,6 @@
 
           if (!payload.description) {
             show("Please provide a Description of Problem.", "error");
-            return;
-          }
-
-          if (selectedFiles.length === 0) {
-            show("Please upload at least one image or document.", "error");
             return;
           }
 
